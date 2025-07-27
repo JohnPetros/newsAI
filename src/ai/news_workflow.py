@@ -1,22 +1,16 @@
-from datetime import datetime
+from pathlib import Path
+import requests as rest_client
 
 from agno.team import Team
 from agno.models.google import Gemini
-from pydantic import BaseModel, Field
-
 from ai.agents import (
     editor_agent,
     scrapper_agent,
     researcher_agent,
     tagger_agent,
     writer_agent,
+    image_generator_agent,
 )
-
-
-class PostModel(BaseModel):
-    title: str = Field(..., description="The title of the post.")
-    content: str = Field(..., description="The content of the post.")
-    tags: list[str] = Field(..., description="The tags of the post.")
 
 
 class NewsWorkflow:
@@ -24,13 +18,9 @@ class NewsWorkflow:
 
     def __init__(self) -> None:
         self.team = Team(
-            name="New Writing Team",
+            name="News Writing Team",
             mode="coordinate",
-            model=Gemini(id="gemini-2.0-flash-001"),
-            team_session_state={
-                "topic": "technology",
-                "current_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            },
+            model=Gemini(id="gemini-2.5-pro"),
             members=[
                 researcher_agent,
                 editor_agent,
@@ -42,12 +32,23 @@ class NewsWorkflow:
             instructions=[
                 "You are a team of experts working together to create a blog post about the most relevant and engaging news story of a given topic in PT-BR.",
                 "You will work together to research, edit, and write a blog post about the most relevant and engaging news story of a given topic.",
-                "You will use the following agents to work together:",
+                "You will use the following agents to work together and in this order:",
                 "1. Researcher Agent - to research the most relevant and engaging news story of the day",
                 "2. Editor Agent - to edit the news story and make it more engaging and informative",
                 "3. Scrapper Agent - to scrape the news story and get the full content",
                 "4. Writer Agent - to write the blog post based on the news story",
-                "5. Tagger Agent - to tag the blog post with the most relevant tags",
+                "5. Tagger Agent - to create a list of tags for the blog post",
+                "After the post is written, you should save the post title and original url in the sqlite storage.",
+                "Give me the final blog post with the title, content, tags and the original url of the news story in JSON format.",
+                "The JSON should be in the following format:",
+                """
+                {
+                    "title": "The title of the post.",
+                    "content": "The content of the post in HTML format.",
+                    "tags": ["The tags of the post."],
+                    "original_url": "The original url of the news story."
+                }
+                """,
             ],
             share_member_interactions=False,
             show_members_responses=False,
@@ -56,8 +57,31 @@ class NewsWorkflow:
         )
 
     def start(self) -> None:
-        self.team.print_response(
-            "Create a blog post about the technology topic",
-            show_full_reasoning=True,
-            stream=True,
-        )
+        # response = self.team.run(
+        #     "Create a blog post about the technology topic",
+        #     show_full_reasoning=False,
+        #     stream=False,
+        # )
+        # image_generator_agent.run(response.content)
+        # print(f"Response: {response.content}")
+
+        image = Path("image.png")
+
+        with image.open("rb") as file:
+            form_data = [
+                ("title", "Teste"),
+                ("content", "Teste"),
+                ("category", "Tecnologia"),
+                ("readingTime", "15"),
+                ("imageAlt", "Texto da imagem alternativo"),
+                ("tags[]", "Tag1"),
+                ("tags[]", "Tag2"),
+            ]
+
+            response = rest_client.post(
+                "http://localhost:4321/api/posts",
+                data=form_data,
+                files={"image": (image.name, file, "image/png")},
+                timeout=30,
+            )
+            print(response.json())
