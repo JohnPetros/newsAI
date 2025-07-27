@@ -19,7 +19,9 @@ researcher_agent = Agent(
     ),
     instructions=[
         "Research the top trending news stories in Brazil for the past 12 hours from reliable Brazilian news sources about the topic {topic}.",
-        "Use the TavilyTools to search for the news stories.",
+        "If the news story is already in the database, you should not research it again.",
+        "The news stories should be in Portuguese.",
+        "Use the DuckDuckGoTools to search for the news stories.",
         "You should return a list of five top Brazilian news story including titles, their corresponding URLs, and a brief summary for each story from the past 24 hours. All in Portuguese.",
     ],
     add_datetime_to_instructions=True,

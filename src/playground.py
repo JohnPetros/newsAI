@@ -13,6 +13,7 @@ from ai.agents import (
     researcher_agent,
     tagger_agent,
     writer_agent,
+    image_generator_agent,
 )
 
 sys_path.append(os_path.dirname(os_path.abspath(__file__)))
@@ -26,6 +27,7 @@ playground = Playground(
         researcher_agent,
         tagger_agent,
         writer_agent,
+        image_generator_agent,
     ],
     teams=[NewsWorkflow().team],
 )
