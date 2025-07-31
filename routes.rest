@@ -1,0 +1,8 @@
+@URL = http://localhost:8000
+
+POST {{URL}}/post
+Content-Type: application/json
+
+{
+  "category": "Economia"
+}
