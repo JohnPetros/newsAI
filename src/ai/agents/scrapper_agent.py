@@ -5,10 +5,9 @@ from agno.models.google import Gemini
 
 from agno.tools.agentql import AgentQLTools
 
-
 scrapper_agent = Agent(
     name="Scrapper Agent",
-    model=Gemini(id="gemini-2.0-flash-001"),
+    model=Gemini(id="gemini-2.5-pro"),
     role="Scrape the content of the selected website URL.",
     description=dedent(
         """
@@ -18,7 +17,7 @@ scrapper_agent = Agent(
     ),
     tools=[AgentQLTools()],
     tool_call_limit=1,
-    debug_mode=True,
+    debug_mode=False,
     instructions=[
         "Scrape and extract the entire body of the most relevant and current news story from its URL for further analysis and transformation into engaging content.",
         "Use the AgentQLTools to scrape the news story.",

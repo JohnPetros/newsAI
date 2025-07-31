@@ -7,7 +7,7 @@ writer_agent = Agent(
     model=Gemini(id="gemini-2.5-pro"),
     role="Craft engaging and informative blog posts based on the trending news stories collected by the researcher.",
     description="you are a skilled writer, your task is to transform the top, most relevant news stories provided by the researcher into well-written, compelling blog posts that captivate and inform the audience",
-    debug_mode=True,
+    debug_mode=False,
     instructions=[
         "Read the news story content and rewrite it in your own words while preserving its meaning and emphasizing SEO best practices.",
         "The blog post should be written between 500 and 1000 words.",

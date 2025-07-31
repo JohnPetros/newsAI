@@ -1,5 +1,4 @@
-from pathlib import Path
-import requests as rest_client
+from json import loads as load_json
 
 from agno.team import Team
 from agno.models.google import Gemini
@@ -11,16 +10,17 @@ from ai.agents import (
     writer_agent,
     image_generator_agent,
 )
+from entities.post import Post
 
 
-class NewsWorkflow:
+class CreatePostWorkflow:
     team: Team
 
     def __init__(self) -> None:
         self.team = Team(
             name="News Writing Team",
             mode="coordinate",
-            model=Gemini(id="gemini-2.5-pro"),
+            model=Gemini(id="gemini-2.0-flash"),
             members=[
                 researcher_agent,
                 editor_agent,
@@ -28,7 +28,7 @@ class NewsWorkflow:
                 writer_agent,
                 tagger_agent,
             ],
-            # debug_mode=True,
+            debug_mode=False,
             instructions=[
                 "You are a team of experts working together to create a blog post about the most relevant and engaging news story of a given topic in PT-BR.",
                 "You will work together to research, edit, and write a blog post about the most relevant and engaging news story of a given topic.",
@@ -56,32 +56,47 @@ class NewsWorkflow:
             success_criteria="The team has provided a complete blog post in PT-BR about the most relevant and engaging news story of the given topic.",
         )
 
-    def start(self) -> None:
-        # response = self.team.run(
-        #     "Create a blog post about the technology topic",
-        #     show_full_reasoning=False,
-        #     stream=False,
-        # )
-        # image_generator_agent.run(response.content)
-        # print(f"Response: {response.content}")
+    def start(self, topic: str) -> Post:
+        team_response = self._run_team(topic)
+        final_response = self._run_image_agent(team_response)
+        return self._convert_to_post(final_response)
 
-        image = Path("image.png")
+    def _run_team(self, topic: str) -> str:
+        team_response = self.team.run(
+            f"Create a blog post about the {topic} topic",
+            show_full_reasoning=False,
+            stream=True,
+        )
+        final_response = ""
+        can_include_content = False
+        for chunk in team_response:
+            if "```json" in str(chunk.content):
+                can_include_content = True
+            if can_include_content:
+                final_response += str(chunk.content)
 
-        with image.open("rb") as file:
-            form_data = [
-                ("title", "Teste"),
-                ("content", "Teste"),
-                ("category", "Tecnologia"),
-                ("readingTime", "15"),
-                ("imageAlt", "Texto da imagem alternativo"),
-                ("tags[]", "Tag1"),
-                ("tags[]", "Tag2"),
-            ]
+        return final_response
 
-            response = rest_client.post(
-                "http://localhost:4321/api/posts",
-                data=form_data,
-                files={"image": (image.name, file, "image/png")},
-                timeout=30,
+    def _run_image_agent(self, team_response: str) -> str:
+        agent_response = image_generator_agent.run(team_response, stream=True)
+        final_response = ""
+        for chunk in agent_response:
+            final_response += str(chunk.content)
+
+        return final_response
+
+    def _convert_to_post(self, response: str) -> Post:
+        data = dict(
+            load_json(
+                response.replace("```json", "").replace("```", "").replace("\n", "")
             )
-            print(response.json())
+        )
+
+        return Post(
+            title=data["title"],
+            content=data["content"],
+            category=data["category"],
+            reading_time=data["reading_time"],
+            image_alt=data["image_alt"],
+            tags=data["tags"],
+        )

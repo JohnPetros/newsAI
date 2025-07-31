@@ -9,7 +9,7 @@ image_generator_agent = Agent(
     model=Gemini(id="gemini-2.5-pro"),
     role="Generate an image for a blog post according to the provided content using an advanced image generation tool that is able to generate images from textual prompts.",
     description="You are an expert image generator with extensive experience in generating images for blog posts using AI.",
-    debug_mode=True,
+    debug_mode=False,
     tools=[generate_image_tool],
     tool_call_limit=1,
     instructions=[
@@ -19,13 +19,9 @@ image_generator_agent = Agent(
         "Create a prompt for the image generation tool to generate the image.",
         "The prompt should be in English for better image generation results.",
         "After the image is generated, create an altertive text (alt) for the image.",
-        "The json should be in the following format:",
+        "Your response should be in the following JSON format:",
         """
-         {
-            "title": "The title of the post.",
-            "content": "The content of the post in HTML format.",
-            "tags": ["The tags of the post."],
-            "original_url": "The original url of the news story.",
+        {
             "image_alt": "The alternative text for the image."
         }
         """,

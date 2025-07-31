@@ -1,16 +1,8 @@
-import os
-import google.genai as genai
-from google.genai import types
 import pathlib
-from dotenv import load_dotenv
 
-load_dotenv()
+from google.genai import types, Client
 
-client = genai.Client(
-    api_key=os.environ["GOOGLE_API_KEY"],
-)
-
-MODEL_ID = "gemini-2.0-flash-exp-image-generation"
+from constants import ENV
 
 
 def save_image(response: types.GenerateContentResponse, path: str) -> None:
@@ -33,9 +25,10 @@ def generate_image_tool(prompt: str) -> bool:
     Returns:
         bool: True if the image was generated successfully, False otherwise.
     """
+    client = Client(api_key=ENV.google_api_key)
 
     response = client.models.generate_content(
-        model=MODEL_ID,
+        model="gemini-2.0-flash-exp-image-generation",
         contents=prompt,
         config=types.GenerateContentConfig(response_modalities=["Text", "Image"]),
     )
