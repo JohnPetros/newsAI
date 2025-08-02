@@ -26,6 +26,6 @@ researcher_agent = Agent(
     ],
     add_datetime_to_instructions=True,
     tools=[DuckDuckGoTools()],
-    tool_call_limit=2,
+    tool_call_limit=1,
     show_tool_calls=True,
 )

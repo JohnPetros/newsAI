@@ -18,11 +18,11 @@ image_generator_agent = Agent(
         "The image should trigger emotions and curiosity in the reader so that they want to read the blog post.",
         "Create a prompt for the image generation tool to generate the image.",
         "The prompt should be in English for better image generation results.",
-        "After the image is generated, create an altertive text (alt) for the image.",
+        "After the image is generated, create an altertive text (alt) for the image in Portuguese - PT-BR.",
         "Your response should be in the following JSON format:",
         """
         {
-            "image_alt": "The alternative text for the image."
+            "image_alt": "The alternative text for the image in Portuguese - PT-BR."
         }
         """,
     ],

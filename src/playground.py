@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from ai.news_workflow import NewsWorkflow
+from ai import CreatePostWorkflow
 from ai.agents import (
     editor_agent,
     scrapper_agent,
@@ -29,7 +29,7 @@ playground = Playground(
         writer_agent,
         image_generator_agent,
     ],
-    teams=[NewsWorkflow().team],
+    teams=[CreatePostWorkflow().team],
 )
 
 app = playground.get_app()
