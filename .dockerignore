@@ -1,0 +1,118 @@
+# Arquivos e diretórios do Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDEs e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Arquivos de teste
+tests/
+test_*
+*_test.py
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Documentação
+README.md
+docs/
+*.md
+DOCKER.md
+
+# Arquivos de desenvolvimento e configuração local
+docker-compose.yml
+docker-compose.*.yml
+build.sh
+routes.rest
+
+# Arquivos de imagem e mídia
+image.png
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+
+# Arquivos de cache e lock desnecessários
+node_modules/
+.npm/
+.yarn/
+
+# Arquivos de CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Arquivos de backup
+*.bak
+*.backup
+*.old
+
+# Arquivos de configuração local
+
+# Arquivos de debug
+*.debug
+debug/
+
+# Arquivos de performance
+*.prof
+*.profile
+
+# Arquivos de segurança
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Outros arquivos desnecessários
+*.orig
+*.rej 
