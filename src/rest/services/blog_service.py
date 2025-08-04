@@ -27,4 +27,6 @@ class BlogService:
                 files={"image": (image.name, file, "image/png")},
                 timeout=30,
             )
-            print(response.json())
+            print("blog api response", response.json())
+
+            image.unlink()

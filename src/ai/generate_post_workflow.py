@@ -15,7 +15,7 @@ from entities.post import Post
 from errors.app_error import AppError
 
 
-class CreatePostWorkflow:
+class GeneratePostWorkflow:
     team: Team
 
     def __init__(self) -> None:

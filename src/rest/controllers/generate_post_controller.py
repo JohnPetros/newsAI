@@ -1,22 +1,23 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from ai import CreatePostWorkflow
+from ai import GeneratePostWorkflow
 from entities import Post
+from rest.services import BlogService
 
 
 class Body(BaseModel):
     category: str
 
 
-class CreatePostController:
+class GeneratePostController:
     def __init__(self, router: APIRouter) -> None:
         @router.post("/post")
         async def _(body: Body) -> Post:
-            workflow = CreatePostWorkflow()
+            workflow = GeneratePostWorkflow()
             post = workflow.start(body.category)
 
-            # service = BlogService()
-            # service.create_post(post)
+            service = BlogService()
+            service.create_post(post)
 
             return post

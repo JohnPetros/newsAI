@@ -4,5 +4,5 @@ POST {{URL}}/post
 Content-Type: application/json
 
 {
-  "category": "Política"
+  "category": "Economia"
 }
