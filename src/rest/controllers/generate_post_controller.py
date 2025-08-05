@@ -13,7 +13,7 @@ class Body(BaseModel):
 class GeneratePostController:
     def __init__(self, router: APIRouter) -> None:
         @router.post("/post")
-        async def _(body: Body) -> Post:
+        def _(body: Body) -> Post:
             workflow = GeneratePostWorkflow()
             post = workflow.start(body.category)
 

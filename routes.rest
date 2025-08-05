@@ -1,8 +1,10 @@
-@URL = http://localhost:8000
+### Health check
+GET {{URL}}/health
 
+### Generate a new post
 POST {{URL}}/post
 Content-Type: application/json
 
 {
-  "category": "Economia"
+  "category": "economia"
 }
