@@ -30,9 +30,11 @@ jobs:
       - name: Set up Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v2'
 
-      - name: Configure Docker
-        run: |
-          gcloud auth configure-docker
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Create .env file
+        run: echo "${{ secrets.ENV }}" >> .env
 
       - name: Build and tag the Docker image
         run: |
