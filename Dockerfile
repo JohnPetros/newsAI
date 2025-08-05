@@ -93,7 +93,7 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 # Expor porta
-EXPOSE 8000
+EXPOSE 8080
 
 # Comando para executar a aplicação
 CMD ["uv", "run", "python", "src/main.py"]
