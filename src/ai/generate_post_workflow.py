@@ -22,7 +22,7 @@ class GeneratePostWorkflow:
         self.team = Team(
             name="News Writing Team",
             mode="coordinate",
-            model=Gemini(id="gemini-2.0-flash"),
+            model=Gemini(id="gemini-2.5-flash"),
             members=[
                 researcher_agent,
                 editor_agent,
@@ -77,7 +77,7 @@ class GeneratePostWorkflow:
         team_response = None
         try:
             team_response = self.team.run(
-                f"Create a blog post about the {post_category} topic",
+                f"Crie um post de blog sobre o assunto de {post_category}",
                 show_full_reasoning=False,
                 stream=True,
             )
@@ -87,6 +87,7 @@ class GeneratePostWorkflow:
         final_response = ""
         can_include_content = False
         for chunk in team_response:
+            print("chunk", str(chunk.content))
             if "```json" in str(chunk.content):
                 can_include_content = True
             if can_include_content:
