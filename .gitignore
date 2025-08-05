@@ -12,3 +12,4 @@ wheels/
 image.png
 
 .env
+.env.production
