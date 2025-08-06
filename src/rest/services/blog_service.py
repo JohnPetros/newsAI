@@ -21,12 +21,11 @@ class BlogService:
             for tag in post.tags:
                 form_data.append(("tags[]", tag))
 
-            response = rest_client.post(
-                f"{ENV.blog_api_url}/posts",
+            rest_client.post(
+                f"{ENV.blog_api_url}/posts/create",
                 data=form_data,
                 files={"image": (image.name, file, "image/png")},
                 timeout=30,
             )
-            print("blog api response", response.json())
 
             image.unlink()
