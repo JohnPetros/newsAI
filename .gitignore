@@ -12,8 +12,7 @@ wheels/
 image.png
 
 # Environment variables
-.env
-.env.production
+.env*
 
 # VSCode
 .vscode
