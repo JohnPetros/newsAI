@@ -2,7 +2,7 @@ from textwrap import dedent
 
 from agno.agent import Agent
 from agno.models.google import Gemini
-from agno.tools.agentql import AgentQLTools
+from ai.tools.scrape_website_tool import scrape_website_tool
 
 
 scrapper_agent = Agent(
@@ -15,12 +15,12 @@ scrapper_agent = Agent(
         Text, media links, and content are captured accurately. This content will then be used for content generation by the writer agent who will craft compelling blog posts based on the scraped data. So, your role is critical in ensuring that the information extracted is comprehensive and clean
         """
     ),
-    tools=[AgentQLTools()],
+    tools=[scrape_website_tool],
     tool_call_limit=1,
     debug_mode=True,
     instructions=[
         "Scrape and extract the entire body of the most relevant and current news story from its URL for further analysis and transformation into engaging content.",
-        "Use the AgentQLTools to scrape the news story.",
+        "Use the scrap_website_tool to scrape the news story.",
         "You should return only the full body of the news story, do not include any other text or information from the website.",
         "Get all the relevant information as you can from the website, do not miss any information.",
     ],

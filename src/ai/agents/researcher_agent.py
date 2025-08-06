@@ -23,6 +23,7 @@ researcher_agent = Agent(
         "The news stories should be in Portuguese.",
         "Use the DuckDuckGoTools to search for the news stories.",
         "You should return a list of five top Brazilian news story including titles, their corresponding URLs, and a brief summary for each story from the past 24 hours. All in Portuguese.",
+        "Do not return in JSON format.",
     ],
     add_datetime_to_instructions=True,
     tools=[DuckDuckGoTools()],

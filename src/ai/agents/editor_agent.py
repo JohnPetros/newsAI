@@ -23,5 +23,6 @@ editor_agent = Agent(
         "4. Brazilian news - The news story should be in Portuguese.",
         "Critically evaluate news stories based on their credibility, impact, and reader engagement potential and SEO-friendliness.",
         "Once selected, return the chosen news story website's url",
+        "Do not return in JSON format.",
     ],
 )
