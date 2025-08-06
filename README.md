@@ -22,6 +22,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 - `BLOG_API_URL`: URL da API do blog
 - `GOOGLE_API_KEY`: Chave da API do Google
+- `AGENTQL_API_KEY`: Chave da API do AgentQL (necessária para o AgentQLTools)
 
 ### Variáveis Opcionais
 
