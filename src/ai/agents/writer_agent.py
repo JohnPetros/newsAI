@@ -20,5 +20,6 @@ writer_agent = Agent(
         "The content should be SEO-optimized and written in HTML format.",
         "Maintain the assigned category throughout the post.",
         "Do not make up any information, only use the information provided by the news story.",
+        "Do not return in JSON format.",
     ],
 )

@@ -53,6 +53,7 @@ class GeneratePostWorkflow:
                     "original_url": "The original url of the news story."
                 }
                 """,
+                "Before the json response, you should always say 'Here is the final blog post in JSON format:'",
             ],
             share_member_interactions=False,
             show_members_responses=False,
@@ -92,6 +93,7 @@ class GeneratePostWorkflow:
         can_include_content = False
         for chunk in team_response:
             print("chunk", str(chunk.content))
+            print("event", str(chunk.event))
             if "```json" in str(chunk.content):
                 can_include_content = True
             if can_include_content:
