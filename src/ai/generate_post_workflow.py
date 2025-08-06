@@ -1,5 +1,6 @@
 from json import loads as load_json
 from typing import Any
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from agno.team import Team
 from agno.models.google import Gemini
@@ -59,6 +60,9 @@ class GeneratePostWorkflow:
             success_criteria="The team has provided a complete blog post in PT-BR about the most relevant and engaging news story of the given topic.",
         )
 
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=15)
+    )
     def start(self, post_category: str) -> Post:
         post = None
         team_response = self._run_team(post_category)
