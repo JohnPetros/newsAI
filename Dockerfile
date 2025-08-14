@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y \
   gnupg \
   ca-certificates \
   fonts-liberation \
+  fonts-dejavu \
+  fonts-freefont-ttf \
+  fonts-unifont \
   libasound2 \
   libatk-bridge2.0-0 \
   libatk1.0-0 \
@@ -59,8 +62,8 @@ COPY pyproject.toml uv.lock ./
 # Instalar dependências com uv (apenas produção)
 RUN uv sync --frozen --no-dev
 
-# Instalar Playwright e navegadores (como root)
-RUN uv run playwright install --with-deps chromium
+# Instalar Playwright e navegadores (sem dependências do sistema)
+RUN uv run playwright install chromium
 
 # =============================================================================
 # Estágio 3: Build da aplicação
@@ -69,6 +72,7 @@ FROM deps AS builder
 
 # Copiar código da aplicação
 COPY src/ ./src/
+
 
 # =============================================================================
 # Estágio 4: Imagem final
@@ -86,6 +90,9 @@ ENV PYTHONUNBUFFERED=1 \
 RUN apt-get update && apt-get install -y \
   curl \
   fonts-liberation \
+  fonts-dejavu \
+  fonts-freefont-ttf \
+  fonts-unifont \
   libasound2 \
   libatk-bridge2.0-0 \
   libatk1.0-0 \
@@ -127,8 +134,12 @@ COPY --from=deps /app/.venv /app/.venv
 # Copiar navegadores do Playwright do estágio de dependências
 COPY --from=deps /root/.cache/ms-playwright /home/appuser/.cache/ms-playwright
 
+# Ajustar permissões dos navegadores do Playwright
+RUN chown -R appuser:appuser /home/appuser/.cache/ms-playwright
+
 # Copiar código da aplicação
 COPY --from=builder /app/src ./src
+
 
 # Copiar arquivo .env se existir (inclui .env, .env.local, .env.production, etc.)
 COPY .env ./
@@ -140,9 +151,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 RUN mkdir -p /home/appuser/.cache && \
   chown -R appuser:appuser /home/appuser && \
   chown -R appuser:appuser /app
-
-# Alterar propriedade dos arquivos para o usuário appuser
-RUN chown -R appuser:appuser /app
 
 # Mudar para usuário não-root
 USER appuser

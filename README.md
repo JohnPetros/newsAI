@@ -130,6 +130,24 @@ advanced search
 > [pyproject.toml](https://github.com/JohnPetros/newsAI/blob/main/pyproject.toml)
 > file
 
+## 🗃️ Modules
+
+The project was developed following software architecture best practices, with a
+modular and well-organized structure:
+
+```
+src/
+├── ai/                    # AI agents and workflows
+│   ├── agents/           # Specialized agents
+│   └── tools/            # AI tools
+├── entities/              # Data models
+├── rest/                  # REST API
+│   ├── controllers/       # API controllers
+│   └── services/          # Business services
+├── errors/                # Error handling
+└── constants/             # Application constants
+```
+
 ---
 
 ## 🚀 How to run the application?
@@ -168,22 +186,6 @@ $ uv sync
 # Run the application in development mode
 $ uv run python src/main.py
 ```
-
-#### Using Docker
-
-```bash
-# Clone this repository
-$ git clone https://github.com/JohnPetros/newsAI.git
-
-# Access the project folder
-$ cd newsAI
-
-# Run with Docker
-$ docker-compose up -d
-```
-
-> See the [Docker documentation](DOCKER.md) for more details on how to use
-> Docker with this project
 
 ### 🔑 Environment Variables Configuration
 
@@ -261,26 +263,6 @@ $ git push origin my-feature
 > You can also open a [new issue](https://github.com/JohnPetros/newsAI/issues)
 > regarding any problem, question or suggestion for the project. I'll be happy
 > to help, as well as improve this project
-
----
-
-## 🎨 Layout
-
-The project was developed following software architecture best practices, with a
-modular and well-organized structure:
-
-```
-src/
-├── ai/                    # AI agents and workflows
-│   ├── agents/           # Specialized agents
-│   └── tools/            # AI tools
-├── entities/              # Data models
-├── rest/                  # REST API
-│   ├── controllers/       # API controllers
-│   └── services/          # Business services
-├── errors/                # Error handling
-└── constants/             # Application constants
-```
 
 ---
 
