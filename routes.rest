@@ -1,5 +1,6 @@
 ### Health check
 GET {{URL}}/health
+X-Api-Key: 123456
 
 ### Generate a new post
 POST {{URL}}/post
