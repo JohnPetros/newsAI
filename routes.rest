@@ -1,10 +1,11 @@
 ### Health check
 GET {{URL}}/health
-X-Api-Key: {{API_KEY}}
+X-API-Key: {{API_KEY}}
 
 ### Generate a new post
 POST {{URL}}/post
 Content-Type: application/json
+X-API-Key: {{API_KEY}}
 
 {
   "category": "economia"
