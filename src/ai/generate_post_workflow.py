@@ -1,9 +1,9 @@
 from json import loads as load_json
 from typing import Any
-from tenacity import retry, stop_after_attempt, wait_exponential
 
 from agno.team import Team
 from agno.models.google import Gemini
+from tenacity import retry, stop_after_attempt, wait_exponential
 from ai.agents import (
     editor_agent,
     scrapper_agent,
@@ -22,8 +22,7 @@ class GeneratePostWorkflow:
     def __init__(self) -> None:
         self.team = Team(
             name="News Writing Team",
-            mode="coordinate",
-            model=Gemini(id="gemini-2.5-flash"),
+            model=Gemini(id="gemini-3-pro-preview"),
             members=[
                 researcher_agent,
                 editor_agent,
@@ -34,6 +33,7 @@ class GeneratePostWorkflow:
             debug_mode=False,
             instructions=[
                 "You are a team of experts working together to create a blog post about the most relevant and engaging news story of a given topic in PT-BR.",
+                "Create only one blog post"
                 "You will work together to research, edit, and write a blog post about the most relevant and engaging news story of a given topic.",
                 "You will use the following agents to work together and in this order:",
                 "1. Researcher Agent - to research the most relevant and engaging news story of the day",
@@ -57,8 +57,7 @@ class GeneratePostWorkflow:
             ],
             share_member_interactions=False,
             show_members_responses=False,
-            add_datetime_to_instructions=True,
-            success_criteria="The team has provided a complete blog post in PT-BR about the most relevant and engaging news story of the given topic.",
+            add_datetime_to_context=True,
         )
 
     @retry(
@@ -129,11 +128,10 @@ class GeneratePostWorkflow:
         return final_response
 
     def _load_json(self, response: str) -> dict[str, Any]:
-        return dict(
-            load_json(
-                response.replace("```json", "").replace("```", "").replace("\n", "")
-            )
-        )
+        start = response.find("{")
+        end = response.rfind("}") + 1
+        json_text = response[start:end]
+        return dict(load_json(json_text))
 
     def _convert_to_post(self, response: str, post_category: str) -> Post:
         data = self._load_json(response)
