@@ -2,7 +2,6 @@
 GET {{URL}}/health
 X-API-Key: {{API_KEY}}
 
-
 ### Generate a new post
 POST {{URL}}/post
 Content-Type: application/json
