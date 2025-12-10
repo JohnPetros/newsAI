@@ -6,8 +6,9 @@ from ai.tools.scrape_website_tool import scrape_website_tool
 
 
 scrapper_agent = Agent(
+    id="scrapper-agent",
     name="Scrapper Agent",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id="gemini-2.5-flash"),
     role="Scrape the content of the selected website URL.",
     description=dedent(
         """

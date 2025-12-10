@@ -6,7 +6,7 @@ from agno.models.google import Gemini
 
 editor_agent = Agent(
     name="Editor Agent",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id="gemini-2.5-flash"),
     role="Select the most relevant and engaging news story to be used as the foundation for a compelling blog post",
     description=dedent(
         """

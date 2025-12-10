@@ -5,8 +5,9 @@ from ai.tools.generate_image_tool import generate_image_tool as gen_image_tool
 
 
 image_generator_agent = Agent(
+    id="image-generator-agent",
     name="Image Generator Agent",
-    model=Gemini(id="gemini-2.5-flash"),
+    model=Gemini(id="gemini-3-pro-preview"),
     role="Generate an image for a blog post according to the provided content using an advanced image generation tool that is able to generate images from textual prompts.",
     description="You are an expert image generator with extensive experience in generating images for blog posts using AI.",
     debug_mode=True,

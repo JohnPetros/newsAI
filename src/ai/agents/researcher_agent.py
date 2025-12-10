@@ -7,8 +7,9 @@ from agno.models.google import Gemini
 
 
 researcher_agent = Agent(
+    id="researcher-agent",
     name="Researcher Agent",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id="gemini-2.5-flash"),
     role="Conduct research to identify the top trending news stories of the day that can inspire engaging and relevant blog content",
     debug_mode=True,
     description=dedent(
@@ -25,8 +26,7 @@ researcher_agent = Agent(
         "You should return a list of five top Brazilian news story including titles, their corresponding URLs, and a brief summary for each story from the past 24 hours. All in Portuguese.",
         "Do not return in JSON format.",
     ],
-    add_datetime_to_instructions=True,
+    add_datetime_to_context=True,
     tools=[DuckDuckGoTools()],
     tool_call_limit=1,
-    show_tool_calls=True,
 )

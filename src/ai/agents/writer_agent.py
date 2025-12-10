@@ -3,8 +3,9 @@ from agno.models.google import Gemini
 
 
 writer_agent = Agent(
+    id="writer-agent",
     name="Writer Agent",
-    model=Gemini(id="gemini-2.5-flash"),
+    model=Gemini(id="gemini-3-pro-preview"),
     role="Craft engaging and informative blog posts based on the trending news stories collected by the researcher.",
     description="you are a skilled writer, your task is to transform the top, most relevant news stories provided by the researcher into well-written, compelling blog posts that captivate and inform the audience",
     debug_mode=False,

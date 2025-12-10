@@ -3,8 +3,9 @@ from agno.models.google import Gemini
 
 
 tagger_agent = Agent(
+    id="tagger-agent",
     name="Tagger Agent",
-    model=Gemini(id="gemini-2.0-flash"),
+    model=Gemini(id="gemini-2.5-flash"),
     role="Assign relevant and optimized tags to the blog post to enhance discoverability and help the audience find content more easily",
     description="You are a tagging expert, your task is to carefully select and apply the most appropriate tags to blog posts, ensuring they are easily searchable and accurately represent the content's themes and topics",
     debug_mode=False,
