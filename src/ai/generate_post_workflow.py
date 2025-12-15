@@ -33,7 +33,7 @@ class GeneratePostWorkflow:
             debug_mode=False,
             instructions=[
                 "You are a team of experts working together to create a blog post about the most relevant and engaging news story of a given topic in PT-BR.",
-                "Create only one blog post"
+                "Create only one blog news story post"
                 "You will work together to research, edit, and write a blog post about the most relevant and engaging news story of a given topic.",
                 "You will use the following agents to work together and in this order:",
                 "1. Researcher Agent - to research the most relevant and engaging news story of the day",
