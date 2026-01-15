@@ -27,6 +27,7 @@ executor.type = "uv"
 # dev = "uv run fastapi dev src/main.py"
 dev = "uv run python src/main.py"
 ai = "uv run python src/playground.py"
+messaging = "npx --ignore-scripts=false inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest --no-discovery"
 genai = "uv run python src/genai.py"
 
 [tool.ruff]
@@ -74,7 +75,7 @@ select = [
   "RUF",
   "N",
 ]
-ignore = ["T201", "COM812", "E501", "I001", "TRY003", "EM101", "F841"]
+ignore = ["T201", "COM812", "E501", "I001", "TRY003", "EM101", "F841", "ANN205"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["ANN201", "S101"]
