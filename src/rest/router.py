@@ -3,10 +3,12 @@ from fastapi import APIRouter
 from rest.controllers import CheckApiHealthController, GeneratePostController
 
 
-def register_router() -> APIRouter:
-    router = APIRouter()
+class Router:
+    @staticmethod
+    def register() -> APIRouter:
+        router = APIRouter()
 
-    CheckApiHealthController(router)
-    GeneratePostController(router)
+        CheckApiHealthController.handle(router)
+        GeneratePostController.handle(router)
 
-    return router
+        return router
