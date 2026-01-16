@@ -29,3 +29,8 @@ class BlogService:
             )
 
             image.unlink()
+
+    def get_next_category(self) -> str:
+        response = rest_client.get(f"{ENV.blog_api_url}/posts/next", timeout=30)
+        data = response.json()
+        return data["category"]
