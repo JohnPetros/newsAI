@@ -8,3 +8,4 @@ class Env(NamedTuple):
     blog_api_url: str = str(getenv("BLOG_API_URL"))
     google_api_key: str = str(getenv("GOOGLE_API_KEY"))
     api_key: str = str(getenv("API_KEY"))
+    inngest_signing_key: str = str(getenv("INNGEST_SIGNING_KEY"))
