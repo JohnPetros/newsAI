@@ -1,3 +1,3 @@
-from .generate_post_workflow import GeneratePostWorkflow
+from .workflow import Workflow
 
-__all__ = ["GeneratePostWorkflow"]
+__all__ = ["Workflow"]

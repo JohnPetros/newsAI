@@ -14,9 +14,10 @@ from ai.agents import (
 )
 from entities.post import Post
 from errors.app_error import AppError
+from dataclasses import asdict
 
 
-class GeneratePostWorkflow:
+class Workflow:
     team: Team
 
     def __init__(self) -> None:
@@ -63,7 +64,7 @@ class GeneratePostWorkflow:
     @retry(
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=15)
     )
-    def start(self, post_category: str) -> Post:
+    def generate_post(self, post_category: str) -> Post:
         post = None
         team_response = self._run_team(post_category)
         print("team_response", team_response)
