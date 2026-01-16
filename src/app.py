@@ -1,22 +1,10 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from errors import AppError
-from rest.router import register_router
-
-
-def http_exception_handler(_: Request, exception: Exception) -> JSONResponse:
-    if isinstance(exception, AppError):
-        return JSONResponse(
-            status_code=500,
-            content={"title": exception.title, "message": exception.message},
-        )
-
-    return JSONResponse(
-        status_code=500,
-        content={"title": "Error", "message": str(exception)},
-    )
+from rest.router import Router
+from messaging.inngest_messaging import InngestMessaging
+from exception_handler import ExceptionHandler
 
 
 def create_app() -> FastAPI:
@@ -30,10 +18,10 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    router = register_router()
+    InngestMessaging.register(app)
 
-    app.add_exception_handler(AppError, http_exception_handler)
+    app.add_exception_handler(AppError, ExceptionHandler.handle)
 
-    app.include_router(router)
+    app.include_router(Router.register())
 
     return app
