@@ -5,11 +5,10 @@ from agno.agent import Agent
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.models.google import Gemini
 
-
 researcher_agent = Agent(
     id="researcher-agent",
     name="Researcher Agent",
-    model=Gemini(id="gemini-2.5-flash"),
+    model=Gemini(id="gemini-3-pro-preview"),
     role="Conduct research to identify the top trending news stories of the day that can inspire engaging and relevant blog content",
     debug_mode=True,
     description=dedent(
@@ -20,7 +19,6 @@ researcher_agent = Agent(
     ),
     instructions=[
         "Research 5 top trending news stories in Brazil for the past 12 hours from reliable Brazilian news sources about the topic {topic}.",
-        "If the news story is already in the database, you should not research it again.",
         "The news stories should be in Portuguese.",
         "Use the DuckDuckGoTools to search for the news stories.",
         "You should return a list of five top Brazilian news story including titles, their corresponding URLs, and a brief summary for each story from the past 24 hours. All in Portuguese.",

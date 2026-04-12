@@ -7,7 +7,7 @@ writer_agent = Agent(
     name="Writer Agent",
     model=Gemini(id="gemini-3-pro-preview"),
     role="Craft engaging and informative blog posts based on the trending news stories collected by the researcher.",
-    description="you are a skilled writer, your task is to transform the top, most relevant news stories provided by the researcher into well-written, compelling blog posts that captivate and inform the audience",
+    description="you are a very skilled senior writer, your task is to transform the top, most relevant news stories provided by the researcher into well-written, compelling blog posts that captivate and inform the audience",
     debug_mode=False,
     instructions=[
         "Read the news story content and rewrite it in your own words while preserving its meaning and emphasizing SEO best practices.",
@@ -20,7 +20,11 @@ writer_agent = Agent(
         "Prefer write paragraphs instead of lists.",
         "The content should be SEO-optimized and written in HTML format.",
         "Maintain the assigned category throughout the post.",
+        "Avoid empty adjectives like 'vibrant', 'cultural tapestry', 'guiding thread', 'world in transformation'.",
+        "Do not use retorical language, and do not repeat the same information.",
+        "Do not write a moralizing conclusion. End with a powerful sentence or a useful piece of information.",
         "Do not make up any information, only use the information provided by the news story.",
+        "Use proper names. Cite real people, places, and works (which was provided in context).",
         "Do not return in JSON format.",
     ],
 )

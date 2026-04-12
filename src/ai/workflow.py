@@ -12,9 +12,8 @@ from ai.agents import (
     writer_agent,
     image_generator_agent,
 )
-from entities.post import Post
+from core.entities import Post
 from errors.app_error import AppError
-from dataclasses import asdict
 
 
 class Workflow:
@@ -33,28 +32,36 @@ class Workflow:
             ],
             debug_mode=False,
             instructions=[
-                "You are a team of experts working together to create a blog post about the most relevant and engaging news story of a given topic in PT-BR.",
-                "Create only one blog news story post"
-                "You will work together to research, edit, and write a blog post about the most relevant and engaging news story of a given topic.",
-                "You will use the following agents to work together and in this order:",
-                "1. Researcher Agent - to research the most relevant and engaging news story of the day",
-                "2. Editor Agent - to edit the news story and make it more engaging and informative",
-                "3. Scrapper Agent - to scrape the news story and get the full content",
-                "4. Writer Agent - to write the blog post based on the news story",
-                "5. Tagger Agent - to create a list of tags for the blog post",
-                "After think the reading time the reader will spend reading the post, you should add the reading time in minutes to the JSON resonse.",
-                "Give me the final blog post with the title, content, tags and the original url of the news story in JSON format.",
-                "The JSON should be in the following format:",
+                "You are an elite journalistic team creating a high-quality blog post in PT-BR.",
+                "CRITICAL RULE: You must be strictly faithful to the current date provided in the context. If today is Feb 3rd, DO NOT write about events in May or August as if they have already happened. Treat future events as future.",
+                "CRITICAL RULE: Do not halluncinate information. All names, dates, and facts must come from the researched and scraped content.",
+                "You will execute the pipeline in this strict order:",
+                "1. Researcher Agent: Search for the most relevant/trending news story of the LAST 24 HOURS on the given topic. Return the specific URL.",
+                "   - Filter out 'evergreen' content or generic articles. Look for breaking news.",
+                "2. Scrapper Agent: Scrape the FULL content from the URL provided by the Researcher. Extract the raw text.",
+                "3. Editor Agent: Analyze the scraped text and define the 'Angle' of the story.",
+                "   - Identify the 3 most important facts.",
+                "   - Decide on a journalistic tone (Serious, Analytic, or Enthusiastic).",
+                "   - Create a structure for the Writer.",
+                "4. Writer Agent: Write the blog post in PT-BR based ONLY on the Editor's plan and Scrapper's data.",
+                "   - STYLE GUIDE: Write like a senior journalist from 'Folha de S.Paulo' or 'The New York Times'.",
+                "   - Avoid AI clichés like 'No cenário atual', 'Tapeçaria cultural', 'Mergulhamos', 'Em suma'.",
+                "   - Use specific entities (Names of people, places, values, dates).",
+                "   - Paragraphs should be short and punchy.",
+                "   - If the news is about the future, use 'Will', 'Expected to', 'Scheduled for'. Never use past tense for future events.",
+                "5. Tagger Agent: Generate 5 relevant SEO tags in PT-BR.",
+                "Calculate the reading time based on the final word count (avg 200 words/min).",
+                "Return the final output strictly in the requested JSON format.",
                 """
                 {
-                    "title": "The title of the post.",
-                    "content": "The content of the post in HTML format.",
-                    "tags": ["The tags of the post."],
-                    "reading_time": "The reading time of the post in minutes. (only numbers)",
-                    "original_url": "The original url of the news story."
+                    "title": "A catchy, SEO-friendly title in PT-BR.",
+                    "content": "The full blog post in HTML format (use <h2>, <p>, <ul>).",
+                    "tags": ["tag1", "tag2", "tag3"],
+                    "reading_time": "integer_minutes",
+                    "original_url": "The source URL found by the researcher"
                 }
                 """,
-                "Before the json response, you should always say 'Here is the final blog post in JSON format:'",
+                "Before the json response, strictly say 'Here is the final blog post in JSON format:'",
             ],
             share_member_interactions=False,
             show_members_responses=False,
@@ -93,7 +100,6 @@ class Workflow:
         can_include_content = False
         for chunk in team_response:
             print("chunk", str(chunk.content))
-            print("event", str(chunk.event))
             if "```json" in str(chunk.content):
                 can_include_content = True
             if can_include_content:
