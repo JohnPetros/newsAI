@@ -1,16 +1,17 @@
 from typing import TypeVar
-
 from agno.workflow import Workflow
 from agno.run.workflow import WorkflowRunOutput
 from agno.workflow import Step, StepInput, StepOutput
 from pydantic import BaseModel
 
 from newsai.ai.agno.schemas import (
+    EditorialBriefSchema,
     FinalPostSchema,
-    GenerateImageInputSchema,
     GeneratePostWorkflowInputSchema,
-    ImageGenerationSchema,
     NewsPostDraftSchema,
+    ResearchCandidatesSchema,
+    ScrapedArticleSchema,
+    TagListSchema,
 )
 from newsai.ai.agno.squad import Squad
 from newsai.core.dtos.post_dto import PostDto
@@ -25,21 +26,49 @@ class AgnoGeneratePostWorkflow(GeneratePostWorkflow):
         self.squad = Squad()
         self.workflow = Workflow(
             name="Agno Generate Post Workflow",
-            description="Generate a blog post and image metadata through explicit Agno workflow steps.",
+            description="Generate a blog post through explicit Agno workflow steps.",
             input_schema=GeneratePostWorkflowInputSchema,
             debug_mode=False,
             steps=[
                 Step(
-                    name="draft_post",
-                    executor=self._draft_post_step,
-                    description="Generate the structured news post draft.",
+                    name="research_story",
+                    executor=self._research_story_step,
+                    description="Research the most relevant story for the requested category.",
                     max_retries=2,
                     strict_input_validation=True,
                 ),
                 Step(
-                    name="generate_image_metadata",
-                    executor=self._generate_image_metadata_step,
-                    description="Generate the image alt text for the post.",
+                    name="create_editorial_brief",
+                    executor=self._create_editorial_brief_step,
+                    description="Create the editorial brief for the writer.",
+                    max_retries=2,
+                    strict_input_validation=True,
+                ),
+                Step(
+                    name="scrape_story",
+                    executor=self._scrape_story_step,
+                    description="Scrape the selected story content.",
+                    max_retries=2,
+                    strict_input_validation=True,
+                ),
+                Step(
+                    name="write_post",
+                    executor=self._write_post_step,
+                    description="Write the structured news post draft.",
+                    max_retries=2,
+                    strict_input_validation=True,
+                ),
+                Step(
+                    name="review_post",
+                    executor=self._review_post_step,
+                    description="Review and improve the drafted news post.",
+                    max_retries=2,
+                    strict_input_validation=True,
+                ),
+                Step(
+                    name="generate_tags",
+                    executor=self._generate_tags_step,
+                    description="Generate the final SEO tags for the post.",
                     max_retries=2,
                     strict_input_validation=True,
                 ),
@@ -68,70 +97,195 @@ class AgnoGeneratePostWorkflow(GeneratePostWorkflow):
             content=final_post.content,
             category=final_post.category,
             reading_time=final_post.reading_time,
-            image_alt=final_post.image_alt,
             tags=final_post.tags,
         )
 
-    def _draft_post_step(self, step_input: StepInput) -> StepOutput:
+    def _research_story_step(self, step_input: StepInput) -> StepOutput:
         workflow_input = self._coerce_schema(
             step_input.input, GeneratePostWorkflowInputSchema
         )
-        prompt = f"Crie um post de blog sobre o assunto de {workflow_input.category}"
+        prompt = (
+            "Pesquise a melhor noticia brasileira recente para a categoria abaixo.\n\n"
+            f"Categoria: {workflow_input.category}"
+        )
 
         try:
-            response = self.squad.news_writing_team.run(
+            response = self.squad.researcher_agent.run(
+                prompt,
+                output_schema=ResearchCandidatesSchema,
+            )
+        except Exception as exception:
+            raise AppError(
+                "AI Error", f"Failed to research the source story: {exception}"
+            ) from exception
+
+        research_candidates = self._coerce_schema(
+            response.content, ResearchCandidatesSchema
+        )
+        return StepOutput(content=research_candidates)
+
+    def _scrape_story_step(self, step_input: StepInput) -> StepOutput:
+        editorial_brief = self._get_previous_step_schema(
+            step_input, "create_editorial_brief", EditorialBriefSchema
+        )
+
+        prompt = (
+            "Extraia o texto principal da noticia abaixo e retorne o artigo limpo.\n\n"
+            f"URL: {editorial_brief.selected_url}\n"
+            f"Titulo editorial: {editorial_brief.title}\n"
+            f"Angulo: {editorial_brief.angle}\n"
+            f"Questao central: {editorial_brief.central_question}"
+        )
+
+        try:
+            response = self.squad.scrapper_agent.run(
+                prompt,
+                output_schema=ScrapedArticleSchema,
+            )
+        except Exception as exception:
+            raise AppError(
+                "AI Error", f"Failed to scrape the source story: {exception}"
+            ) from exception
+        scraped_article = self._coerce_schema(response.content, ScrapedArticleSchema)
+        return StepOutput(content=scraped_article)
+
+    def _create_editorial_brief_step(self, step_input: StepInput) -> StepOutput:
+        workflow_input = self._coerce_schema(
+            step_input.input, GeneratePostWorkflowInputSchema
+        )
+        research_candidates = self._get_previous_step_schema(
+            step_input, "research_story", ResearchCandidatesSchema
+        )
+
+        prompt = self._join_prompt_sections(
+            f"Escolha o melhor candidato e crie um brief editorial para um post sobre a categoria {workflow_input.category}.",
+            "Candidatos pesquisados:",
+            research_candidates.model_dump_json(indent=2),
+        )
+
+        try:
+            response = self.squad.editor_agent.run(
+                prompt,
+                output_schema=EditorialBriefSchema,
+            )
+        except Exception as exception:
+            raise AppError(
+                "AI Error", f"Failed to create the editorial brief: {exception}"
+            ) from exception
+
+        editorial_brief = self._coerce_schema(response.content, EditorialBriefSchema)
+        return StepOutput(content=editorial_brief)
+
+    def _write_post_step(self, step_input: StepInput) -> StepOutput:
+        workflow_input = self._coerce_schema(
+            step_input.input, GeneratePostWorkflowInputSchema
+        )
+        research_candidates = self._get_previous_step_schema(
+            step_input, "research_story", ResearchCandidatesSchema
+        )
+        editorial_brief = self._get_previous_step_schema(
+            step_input, "create_editorial_brief", EditorialBriefSchema
+        )
+        scraped_article = self._get_previous_step_schema(
+            step_input, "scrape_story", ScrapedArticleSchema
+        )
+
+        prompt = self._join_prompt_sections(
+            f"Escreva um post jornalistico em PT-BR para a categoria {workflow_input.category}.",
+            "Use o brief editorial como contrato principal.",
+            "Nao retorne tags. As tags serao geradas em uma etapa separada.",
+            "Candidatos pesquisados:",
+            research_candidates.model_dump_json(indent=2),
+            "Artigo raspado:",
+            scraped_article.model_dump_json(indent=2),
+            "Brief editorial:",
+            editorial_brief.model_dump_json(indent=2),
+        )
+
+        try:
+            response = self.squad.writer_agent.run(
                 prompt,
                 output_schema=NewsPostDraftSchema,
             )
         except Exception as exception:
             raise AppError(
-                "AI Error", f"Failed to generate the news post draft: {exception}"
+                "AI Error", f"Failed to write the blog post: {exception}"
             ) from exception
 
         draft = self._coerce_schema(response.content, NewsPostDraftSchema)
         return StepOutput(content=draft)
 
-    def _generate_image_metadata_step(self, step_input: StepInput) -> StepOutput:
-        workflow_input = self._coerce_schema(
-            step_input.input, GeneratePostWorkflowInputSchema
+    def _review_post_step(self, step_input: StepInput) -> StepOutput:
+        research_candidates = self._get_previous_step_schema(
+            step_input, "research_story", ResearchCandidatesSchema
+        )
+        scraped_article = self._get_previous_step_schema(
+            step_input, "scrape_story", ScrapedArticleSchema
+        )
+        editorial_brief = self._get_previous_step_schema(
+            step_input, "create_editorial_brief", EditorialBriefSchema
         )
         draft = self._get_previous_step_schema(
-            step_input, "draft_post", NewsPostDraftSchema
+            step_input, "write_post", NewsPostDraftSchema
         )
 
-        image_input = GenerateImageInputSchema(
-            title=draft.title,
-            content=draft.content,
-            tags=draft.tags,
-            reading_time=draft.reading_time,
-            original_url=draft.original_url,
-            category=workflow_input.category,
+        prompt = self._join_prompt_sections(
+            "Revise e melhore o post abaixo sem inventar informacoes novas.",
+            "Candidatos pesquisados:",
+            research_candidates.model_dump_json(indent=2),
+            "Artigo raspado:",
+            scraped_article.model_dump_json(indent=2),
+            "Brief editorial:",
+            editorial_brief.model_dump_json(indent=2),
+            "Rascunho do post:",
+            draft.model_dump_json(indent=2),
         )
 
         try:
-            response = self.squad.image_generator_agent.run(
-                image_input.model_dump_json(indent=2),
-                output_schema=ImageGenerationSchema,
+            response = self.squad.reviewer_agent.run(
+                prompt,
+                output_schema=NewsPostDraftSchema,
             )
         except Exception as exception:
             raise AppError(
-                "AI Error", f"Failed to generate image metadata: {exception}"
+                "AI Error", f"Failed to review the blog post: {exception}"
             ) from exception
 
-        image_data = self._coerce_schema(response.content, ImageGenerationSchema)
-        return StepOutput(content=image_data)
+        reviewed_draft = self._coerce_schema(response.content, NewsPostDraftSchema)
+        return StepOutput(content=reviewed_draft)
+
+    def _generate_tags_step(self, step_input: StepInput) -> StepOutput:
+        draft = self._get_previous_step_schema(
+            step_input, "review_post", NewsPostDraftSchema
+        )
+
+        prompt = self._join_prompt_sections(
+            "Gere as tags finais de SEO para o post abaixo.",
+            draft.model_dump_json(indent=2),
+        )
+
+        try:
+            response = self.squad.tagger_agent.run(
+                prompt,
+                output_schema=TagListSchema,
+            )
+        except Exception as exception:
+            raise AppError(
+                "AI Error", f"Failed to generate final tags: {exception}"
+            ) from exception
+
+        tags = self._coerce_schema(response.content, TagListSchema)
+        return StepOutput(content=tags)
 
     def _build_post_step(self, step_input: StepInput) -> StepOutput:
         workflow_input = self._coerce_schema(
             step_input.input, GeneratePostWorkflowInputSchema
         )
         draft = self._get_previous_step_schema(
-            step_input, "draft_post", NewsPostDraftSchema
+            step_input, "review_post", NewsPostDraftSchema
         )
-        image_data = self._get_previous_step_schema(
-            step_input,
-            "generate_image_metadata",
-            ImageGenerationSchema,
+        tags = self._get_previous_step_schema(
+            step_input, "generate_tags", TagListSchema
         )
 
         final_post = FinalPostSchema(
@@ -139,11 +293,14 @@ class AgnoGeneratePostWorkflow(GeneratePostWorkflow):
             content=draft.content,
             category=workflow_input.category,
             reading_time=draft.reading_time,
-            image_alt=image_data.image_alt,
-            tags=draft.tags,
+            tags=tags.tags,
+            original_url=draft.original_url,
         )
 
         return StepOutput(content=final_post)
+
+    def _join_prompt_sections(self, *sections: str) -> str:
+        return "\n\n".join(section.strip() for section in sections if section.strip())
 
     def _get_previous_step_schema(
         self,

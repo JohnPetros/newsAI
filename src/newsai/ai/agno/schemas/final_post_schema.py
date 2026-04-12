@@ -6,5 +6,5 @@ class FinalPostSchema(BaseModel):
     content: str = Field(min_length=1)
     category: str = Field(min_length=1)
     reading_time: int = Field(ge=1)
-    image_alt: str = Field(min_length=1)
     tags: list[str] = Field(min_length=1)
+    original_url: str = Field(min_length=1)

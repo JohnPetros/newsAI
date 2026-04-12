@@ -1,28 +1,35 @@
 from textwrap import dedent
 
 from agno.agent import Agent
-from agno.models.google import Gemini
-from agno.team import Team
-from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.models.openai import OpenAIChat
 
 from newsai.ai.agno.schemas import (
     EditorialBriefSchema,
-    ImageGenerationSchema,
+    EditorialTone,
     NewsPostDraftSchema,
-    ResearchResultSchema,
+    ResearchCandidatesSchema,
     ScrapedArticleSchema,
     TagListSchema,
 )
 from newsai.ai.agno.toolset import Toolset
+from newsai.constants import ENV
 
 
 class Squad:
+    @property
+    def fast_model(self) -> OpenAIChat:
+        return OpenAIChat(id="gpt-4o-mini", api_key=ENV.openai_api_key)
+
+    @property
+    def reasoning_model(self) -> OpenAIChat:
+        return OpenAIChat(id="gpt-4o", api_key=ENV.openai_api_key)
+
     @property
     def editor_agent(self) -> Agent:
         return Agent(
             id="editor-agent",
             name="Editor Agent",
-            model=Gemini(id="gemini-3-flash-preview"),
+            model=self.fast_model,
             role="Select the most relevant and engaging news story to be used as the foundation for a compelling blog post",
             output_schema=EditorialBriefSchema,
             description=dedent(
@@ -32,14 +39,17 @@ class Squad:
             ),
             debug_mode=True,
             instructions=[
-                "Analyze the research results and the scraped article to define the editorial direction for the post.",
-                "Select the most relevant story based on credibility, timeliness, and engagement potential.",
+                "Analyze the research candidates and the scraped article to define the editorial direction for the post.",
+                "Select the most relevant story candidate based on credibility, timeliness, and engagement potential.",
                 "Return the selected source URL in `selected_url`.",
                 "Return a concise PT-BR article title in `title`.",
                 "Return the editorial angle in `angle`.",
-                "Return the journalistic tone in `tone`.",
+                f"Return the journalistic tone in `tone` using one of: {EditorialTone.SERIOUS.value}, {EditorialTone.ANALYTIC.value}, {EditorialTone.ENTHUSIASTIC.value}.",
+                "Return the intended audience in `audience`.",
+                "Return the central question the article should answer in `central_question`.",
                 "Return exactly 3 key factual bullet points in `key_facts`.",
                 "Return at least 3 ordered sections for the writer in `structure`.",
+                "Return optional editorial pitfalls to avoid in `avoid_points`.",
                 "Use only facts present in the provided content.",
             ],
         )
@@ -49,10 +59,10 @@ class Squad:
         return Agent(
             id="researcher-agent",
             name="Researcher Agent",
-            model=Gemini(id="gemini-3-pro-preview"),
+            model=self.reasoning_model,
             role="Conduct research to identify the top trending news stories of the day that can inspire engaging and relevant blog content",
             debug_mode=True,
-            output_schema=ResearchResultSchema,
+            output_schema=ResearchCandidatesSchema,
             description=dedent(
                 """
                 You are an expert researcher, your task is to uncover the most current and impactful news stories, ensuring they are timely and suitable for creating compelling blog posts",
@@ -60,16 +70,16 @@ class Squad:
                 """
             ),
             instructions=[
-                "Research the single best Brazilian news story from the last 24 hours about the requested category.",
+                "Research exactly 5 strong Brazilian news story candidates from the last 24 hours about the requested category.",
                 "The news stories should be in Portuguese.",
-                "Use the DuckDuckGoTools to search for the news stories.",
-                "Return the selected story title in `title`.",
-                "Return the story URL in `url`.",
-                "Return a concise factual summary in `summary`.",
+                "Use the search_news_tool to search for the news stories.",
+                "Return the results in `candidates`.",
+                "For each candidate, return `title`, `url`, `summary`, `why_it_matters`, `main_development`, and `affected_people`.",
+                "Prefer candidates with clear novelty, impact, and trustworthy sourcing.",
                 "Do not invent sources or URLs.",
             ],
             add_datetime_to_context=True,
-            tools=[DuckDuckGoTools()],
+            tools=[Toolset.search_news_tool],
             tool_call_limit=1,
         )
 
@@ -78,7 +88,7 @@ class Squad:
         return Agent(
             id="scrapper-agent",
             name="Scrapper Agent",
-            model=Gemini(id="gemini-3-flash-preview"),
+            model=self.fast_model,
             role="Scrape the content of the selected website URL.",
             output_schema=ScrapedArticleSchema,
             description=dedent(
@@ -94,7 +104,12 @@ class Squad:
                 "Scrape and extract the entire body of the most relevant and current news story from its URL for further analysis and transformation into engaging content.",
                 "Use the scrap_website_tool to scrape the news story.",
                 "Return the input URL in `url`.",
+                "Return the article headline in `headline`.",
+                "Return the publication or site name in `source_name`.",
+                "Return the publication date or visible timestamp in `published_at`.",
                 "Return the cleaned article body in `content`.",
+                "Return notable direct quotes in `key_quotes` when available.",
+                "Return the main named entities in `entities`.",
                 "Get all the relevant information you can from the website without inventing missing details.",
             ],
         )
@@ -104,7 +119,7 @@ class Squad:
         return Agent(
             id="tagger-agent",
             name="Tagger Agent",
-            model=Gemini(id="gemini-3-flash-preview"),
+            model=self.fast_model,
             role="Assign relevant and optimized tags to the blog post to enhance discoverability and help the audience find content more easily",
             description="You are a tagging expert, your task is to carefully select and apply the most appropriate tags to blog posts, ensuring they are easily searchable and accurately represent the content's themes and topics",
             debug_mode=False,
@@ -122,7 +137,7 @@ class Squad:
         return Agent(
             id="writer-agent",
             name="Writer Agent",
-            model=Gemini(id="gemini-3-pro-preview"),
+            model=self.reasoning_model,
             role="Craft engaging and informative blog posts based on the trending news stories collected by the researcher.",
             description="you are a very skilled senior writer, your task is to transform the top, most relevant news stories provided by the researcher into well-written, compelling blog posts that captivate and inform the audience",
             debug_mode=False,
@@ -143,75 +158,35 @@ class Squad:
                 "Do not write a moralizing conclusion. End with a powerful sentence or a useful piece of information.",
                 "Do not make up any information, only use the information provided by the news story.",
                 "Use proper names. Cite real people, places, and works (which was provided in context).",
+                "Use the editorial brief to define the lead, the narrative order, and the emphasis of the article.",
+                "Write a strong opening paragraph with the most newsworthy fact.",
+                "Use the scraped facts, entities, and quotes to make the article specific and concrete.",
                 "Return the final title in `title`.",
                 "Return the HTML body in `content`.",
                 "Return the source URL in `original_url`.",
                 "Return the calculated integer reading time in `reading_time`.",
-                "Return preliminary tags in `tags` if available from the provided context.",
             ],
         )
 
     @property
-    def image_generator_agent(self) -> Agent:
+    def reviewer_agent(self) -> Agent:
         return Agent(
-            id="image-generator-agent",
-            name="Image Generator Agent",
-            model=Gemini(id="gemini-3-pro-preview"),
-            role="Generate an image for a blog post according to the provided content using an advanced image generation tool that is able to generate images from textual prompts.",
-            description="You are an expert image generator with extensive experience in generating images for blog posts using AI.",
-            debug_mode=True,
-            output_schema=ImageGenerationSchema,
-            tools=[Toolset.generate_image_tool],
-            tool_call_limit=1,
-            instructions=[
-                "Analyze the provided data of the blog post in JSON format and generate an image for it.",
-                "The image should be realistic, not surreal, and very coherent with the content of the blog post.",
-                "The image should trigger emotions and curiosity in the reader so that they want to read the blog post.",
-                "Create a prompt for the image generation tool to generate the image.",
-                "The prompt should be in English for better image generation results.",
-                "Use the `gen_image_tool` to generate the image.",
-                "After the image is generated, create an altertive text (alt) for the image in Portuguese - PT-BR.",
-                "Return the alt text in `image_alt`.",
-            ],
-        )
-
-    @property
-    def news_writing_team(self) -> Team:
-        return Team(
-            name="News Writing Team",
-            model=Gemini(id="gemini-3-pro-preview"),
-            output_schema=NewsPostDraftSchema,
-            members=[
-                self.researcher_agent,
-                self.editor_agent,
-                self.scrapper_agent,
-                self.writer_agent,
-                self.tagger_agent,
-            ],
+            id="reviewer-agent",
+            name="Reviewer Agent",
+            model=self.reasoning_model,
+            role="Review and improve a drafted news blog post before publication.",
+            description="You are a senior editorial reviewer responsible for improving clarity, factual discipline, structure, and style without inventing any information.",
             debug_mode=False,
+            output_schema=NewsPostDraftSchema,
             instructions=[
-                "You are an elite journalistic team creating a high-quality blog post in PT-BR.",
-                "CRITICAL RULE: You must be strictly faithful to the current date provided in the context. If today is Feb 3rd, DO NOT write about events in May or August as if they have already happened. Treat future events as future.",
-                "CRITICAL RULE: Do not halluncinate information. All names, dates, and facts must come from the researched and scraped content.",
-                "You will execute the pipeline in this strict order:",
-                "1. Researcher Agent: Search for the most relevant/trending news story of the LAST 24 HOURS on the given topic. Return the specific URL.",
-                "   - Filter out 'evergreen' content or generic articles. Look for breaking news.",
-                "2. Scrapper Agent: Scrape the FULL content from the URL provided by the Researcher. Extract the raw text.",
-                "3. Editor Agent: Analyze the scraped text and define the 'Angle' of the story.",
-                "   - Identify the 3 most important facts.",
-                "   - Decide on a journalistic tone (Serious, Analytic, or Enthusiastic).",
-                "   - Create a structure for the Writer.",
-                "4. Writer Agent: Write the blog post in PT-BR based ONLY on the Editor's plan and Scrapper's data.",
-                "   - STYLE GUIDE: Write like a senior journalist from 'Folha de S.Paulo' or 'The New York Times'.",
-                "   - Avoid AI clichés like 'No cenário atual', 'Tapeçaria cultural', 'Mergulhamos', 'Em suma'.",
-                "   - Use specific entities (Names of people, places, values, dates).",
-                "   - Paragraphs should be short and punchy.",
-                "   - If the news is about the future, use 'Will', 'Expected to', 'Scheduled for'. Never use past tense for future events.",
-                "5. Tagger Agent: Generate 5 relevant SEO tags in PT-BR.",
-                "Calculate the reading time based on the final word count (avg 200 words/min).",
-                "Return structured fields for title, content, tags, reading_time, and original_url.",
+                "Review the provided blog post draft against the research, scraped article, and editorial brief.",
+                "Preserve all verified facts and never invent new information.",
+                "Improve the lead, flow, paragraph rhythm, clarity, and specificity when needed.",
+                "Remove repetition, vague statements, hype language, and moralizing conclusions.",
+                "Keep the post in PT-BR and in HTML format suitable for the <body> tag.",
+                "Preserve the original source URL in `original_url`.",
+                "Return the improved title in `title`.",
+                "Return the improved HTML body in `content`.",
+                "Return the updated integer reading time in `reading_time`.",
             ],
-            share_member_interactions=False,
-            show_members_responses=False,
-            add_datetime_to_context=True,
         )
