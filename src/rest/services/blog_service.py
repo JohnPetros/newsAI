@@ -1,7 +1,7 @@
 from pathlib import Path
 import requests as rest_client
 
-from entities import Post
+from core.entities import Post
 
 from constants import ENV
 

@@ -8,5 +8,5 @@ Content-Type: application/json
 X-API-Key: {{API_KEY}}
 
 {
-  "category": "economia"
+  "category": "educação"
 }
