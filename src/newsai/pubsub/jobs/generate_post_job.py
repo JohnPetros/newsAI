@@ -17,24 +17,26 @@ class GeneratePostJob:
                 "Get next category",
                 GeneratePostJob._get_next_category,
             )
-            workflow = AiPipe.get_generate_post_workflow()
-            post = workflow.generate_post(category)
-            await ctx.step.run(
+            post = await ctx.step.run(
                 "Generate post",
+                lambda: GeneratePostJob._generate_post(category),
+            )
+            await ctx.step.run(
+                "Create post",
                 lambda: GeneratePostJob._create_post(post),
             )
 
         return _
 
     @staticmethod
-    async def _get_next_category():
+    async def _get_next_category() -> str:
         service = RestPipe.get_blog_service()
         return service.get_next_category().body
 
     @staticmethod
-    async def _generate_post(category: str):
+    async def _generate_post(category: str) -> PostDto:
         workflow = AiPipe.get_generate_post_workflow()
-        return workflow.generate_post(category)
+        return workflow.run(category)
 
     @staticmethod
     async def _create_post(post: PostDto):
