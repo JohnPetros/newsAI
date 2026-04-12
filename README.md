@@ -100,7 +100,7 @@ This project was developed using the following technologies:
 ✔️ **[FastAPI](https://fastapi.tiangolo.com/)** for high-performance REST API
 development
 
-✔️ **[Python 3.10+](https://www.python.org/)** as the main programming language
+✔️ **[Python 3.13+](https://www.python.org/)** as the main programming language
 
 ✔️ **[Agno](https://github.com/agno-ai/agno)** for AI agents team orchestration
 
@@ -158,7 +158,7 @@ Before downloading the project, you will need to have the following tools
 installed on your machine:
 
 - [Git](https://git-scm.com/)
-- [Python 3.10+](https://www.python.org/downloads/)
+- [Python 3.13+](https://www.python.org/downloads/)
 - [UV](https://github.com/astral-sh/uv) (Python package manager)
 - [Docker](https://www.docker.com/) (optional, for containerization)
 
@@ -230,7 +230,7 @@ $ uv run pytest --cov=src
 
 ```bash
 # Run playground for interactive testing
-$ uv run python src/playground.py
+$ uv run python src/newsai/playground.py
 
 # Run Google GenAI tests
 $ uv run python src/genai.py

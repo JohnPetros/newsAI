@@ -7,7 +7,7 @@ Este documento descreve como usar Docker com a aplicação NewsAI.
 Esta aplicação usa um **multi-stage build** otimizado com as seguintes
 características:
 
-- **Base**: Python 3.11-slim (Debian)
+- **Base**: Python 3.13-slim (Debian)
 - **Gerenciador de pacotes**: uv (mais rápido que pip)
 - **Multi-stage**: Separação entre dependências e código
 - **Segurança**: Usuário não-root (appuser)
@@ -192,7 +192,7 @@ docker exec newsai ps aux
 
 1. **Multi-stage build**: Reduz tamanho da imagem final
 2. **Cache de dependências**: uv cache para builds mais rápidos
-3. **Imagem base otimizada**: python:3.11-slim
+3. **Imagem base otimizada**: python:3.13-slim
 4. **Usuário não-root**: Segurança aprimorada
 5. **Health check**: Monitoramento automático
 

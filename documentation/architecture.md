@@ -22,7 +22,7 @@ Em vez de uma arquitetura completa de Clean Architecture com repositorios, banco
 - **AI (`src/ai/`)**: workflow principal, agentes especializados e tools usadas pelos agentes.
 - **PubSub (`src/pubsub/`)**: integracao com Inngest e job agendado para geracao automatica de posts.
 - **Constants (`src/constants/`)**: configuracao da aplicacao carregada de variaveis de ambiente.
-- **Bootstrap (`src/app.py`, `src/main.py`)**: composicao da aplicacao FastAPI, registro de CORS, exceptions, rotas e runtime local.
+- **Bootstrap (`src/newsai/app.py`, `src/main.py`)**: composicao da aplicacao FastAPI, registro de CORS, exceptions, rotas e runtime local.
 
 ## Fluxo de Dados
 
@@ -89,7 +89,7 @@ O resultado final e convertido para a entidade `Post` do `core`.
 
 | Tecnologia | Pacote | Finalidade |
 |------------|--------|------------|
-| **Linguagem** | Python 3.10+ | Linguagem principal |
+| **Linguagem** | Python 3.13+ | Linguagem principal |
 | **Framework** | FastAPI | API HTTP |
 | **Servidor ASGI** | Uvicorn | Runtime da aplicacao |
 | **IA Orquestrada** | Agno | Orquestracao de agentes |
