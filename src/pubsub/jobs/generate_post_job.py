@@ -1,7 +1,7 @@
 from inngest import Inngest, Context, TriggerCron
 
 from ai import Workflow
-from entities import Post
+from core.entities import Post
 from rest.services import BlogService
 
 

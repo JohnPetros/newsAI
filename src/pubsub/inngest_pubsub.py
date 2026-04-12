@@ -3,14 +3,14 @@ from logging import getLogger
 from fastapi import FastAPI
 
 from constants import ENV
-from messaging.jobs import GeneratePostJob
+from pubsub.jobs import GeneratePostJob
 
 
-class InngestMessaging:
+class InngestPubSub:
     @staticmethod
     def register(app: FastAPI) -> Inngest:
         inngest = Inngest(
-            app_id="News AI Messaging",
+            app_id="News AI PubSub",
             logger=getLogger("uvicorn"),
             signing_key=ENV.inngest_signing_key,
         )
