@@ -1,5 +1,5 @@
 # Estágio 1: Base com dependências do sistema
-FROM python:3.11-slim AS base
+FROM python:3.13-slim AS base
 
 # Definir variáveis de ambiente para otimização
 ENV PYTHONUNBUFFERED=1 \
@@ -77,7 +77,7 @@ COPY src/ ./src/
 # =============================================================================
 # Estágio 4: Imagem final
 # =============================================================================
-FROM python:3.11-slim AS production
+FROM python:3.13-slim AS production
 
 # Definir variáveis de ambiente
 ENV PYTHONUNBUFFERED=1 \
