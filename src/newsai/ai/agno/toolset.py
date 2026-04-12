@@ -1,12 +1,22 @@
-from newsai.providers.image_generator.gemini.gemini_image_generator_provider import (
-    GeminiImageGeneratorProvider,
-)
-from newsai.providers.website_scraper.playright.playwright_website_scraper_provider import (
-    PlaywrightWebsiteScraperProvider,
-)
+from newsai.pipes.providers_pipe import ProvidersPipe
 
 
 class Toolset:
+    @staticmethod
+    def search_news_tool(query: str) -> str:
+        """
+        Search for recent news stories matching the query.
+
+        Args:
+            query(str): The search query.
+
+        Returns:
+            str: A JSON string containing the top search results.
+        """
+
+        search_provider = ProvidersPipe.get_web_searcher_provider()
+        return search_provider.search(query)
+
     @staticmethod
     def generate_image_tool(prompt: str) -> bool:
         """
@@ -19,7 +29,7 @@ class Toolset:
             bool: True if the image was generated successfully, False otherwise.
         """
 
-        image_generator_provider = GeminiImageGeneratorProvider()
+        image_generator_provider = ProvidersPipe.get_image_generator_provider()
         return image_generator_provider.generate(prompt)
 
     @staticmethod
@@ -34,5 +44,5 @@ class Toolset:
             str: The scraped HTML content.
         """
 
-        scraper_provider = PlaywrightWebsiteScraperProvider()
+        scraper_provider = ProvidersPipe.get_website_scraper_provider()
         return scraper_provider.scrape(url)
