@@ -3,4 +3,4 @@ services:
     name: newsai
     runtime: python
     buildCommand: pip install uv && uv sync --frozen --no-dev
-    startCommand: uv run uvicorn main:app --host 0.0.0.0 --port $PORT --app-dir src
+    startCommand: python -m uvicorn main:app --host 0.0.0.0 --port $PORT --app-dir src
