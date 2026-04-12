@@ -1,0 +1,1 @@
+../../documentation/prompts/commit-code-prompt.md

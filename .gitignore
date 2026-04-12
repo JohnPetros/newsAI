@@ -16,3 +16,8 @@ image.png
 
 # VSCode
 .vscode
+
+# Agents
+CLAUDE.md
+.claude
+.agents
