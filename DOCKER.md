@@ -63,7 +63,11 @@ docker run -d \
   --name newsai \
   -p 8000:8000 \
   -e BLOG_API_URL=your_blog_api_url \
-  -e GOOGLE_API_KEY=your_google_api_key \
+  -e OPENAI_API_KEY=your_openai_api_key \
+  -e EXA_API_KEY=your_exa_api_key \
+  -e FIRECRAWL_API_KEY=your_firecrawl_api_key \
+  -e API_KEY=your_internal_api_key \
+  -e INNGEST_SIGNING_KEY=your_inngest_signing_key \
   newsai:latest
 
 # Usando Docker Compose
@@ -81,7 +85,11 @@ docker run -it \
   -p 8000:8000 \
   -v $(pwd)/src:/app/src \
   -e BLOG_API_URL=your_blog_api_url \
-  -e GOOGLE_API_KEY=your_google_api_key \
+  -e OPENAI_API_KEY=your_openai_api_key \
+  -e EXA_API_KEY=your_exa_api_key \
+  -e FIRECRAWL_API_KEY=your_firecrawl_api_key \
+  -e API_KEY=your_internal_api_key \
+  -e INNGEST_SIGNING_KEY=your_inngest_signing_key \
   newsai:latest
 ```
 
@@ -92,13 +100,21 @@ docker run -it \
 | `HOST`           | Host da aplicação      | `0.0.0.0` | Não         |
 | `PORT`           | Porta da aplicação     | `8000`    | Não         |
 | `BLOG_API_URL`   | URL da API do blog     | -         | Sim         |
-| `GOOGLE_API_KEY` | Chave da API do Google | -         | Sim         |
+| `OPENAI_API_KEY` | Chave da API OpenAI | -         | Sim         |
+| `EXA_API_KEY` | Chave da API Exa | -         | Sim         |
+| `FIRECRAWL_API_KEY` | Chave da API Firecrawl | -         | Sim         |
+| `API_KEY` | Chave de autenticacao da API | -         | Sim         |
+| `INNGEST_SIGNING_KEY` | Chave de assinatura do Inngest | -         | Sim         |
 
 ### Exemplo de arquivo .env
 
 ```env
 BLOG_API_URL=https://api.blog.com
-GOOGLE_API_KEY=your_google_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+EXA_API_KEY=your_exa_api_key_here
+FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+API_KEY=your_internal_api_key_here
+INNGEST_SIGNING_KEY=your_inngest_signing_key_here
 HOST=0.0.0.0
 PORT=8000
 ```
@@ -161,7 +177,7 @@ docker stats newsai
 2. **Variáveis de ambiente não definidas**
    ```bash
    # Verificar variáveis no container
-   docker exec newsai env | grep -E "(BLOG_API_URL|GOOGLE_API_KEY)"
+   docker exec newsai env | grep -E "(BLOG_API_URL|OPENAI_API_KEY|EXA_API_KEY|FIRECRAWL_API_KEY|API_KEY|INNGEST_SIGNING_KEY)"
    ```
 
 3. **Problemas de permissão**

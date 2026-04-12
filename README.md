@@ -104,22 +104,16 @@ development
 
 ✔️ **[Agno](https://github.com/agno-ai/agno)** for AI agents team orchestration
 
-✔️ **[Google Gemini](https://ai.google.dev/)** as the main language model
-
-✔️ **[AgentQL](https://agentql.com/)** for advanced AI tools
+✔️ **[OpenAI](https://platform.openai.com/)** as the main language model provider
 
 ✔️ **[Pydantic](https://docs.pydantic.dev/)** for data validation and
 serialization
 
 ✔️ **[Uvicorn](https://www.uvicorn.org/)** as high-performance ASGI server
 
-✔️ **[Playwright](https://playwright.dev/)** for advanced web scraping
+✔️ **[Exa](https://exa.ai/)** for web and news search
 
-✔️ **[DuckDuckGo Search](https://pypi.org/project/duckduckgo-search/)** for news
-research
-
-✔️ **[Google Search](https://pypi.org/project/googlesearch-python/)** for
-advanced search
+✔️ **[Firecrawl](https://www.firecrawl.dev/)** for website scraping
 
 ✔️ **[UV](https://github.com/astral-sh/uv)** as optimized Python package manager
 
@@ -198,8 +192,11 @@ PORT=8000
 
 # External APIs (REQUIRED)
 BLOG_API_URL=https://api.blog.com
-GOOGLE_API_KEY=your_google_api_key_here
-AGENTQL_API_KEY=your_agentql_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+EXA_API_KEY=your_exa_api_key_here
+FIRECRAWL_API_KEY=your_firecrawl_api_key_here
+API_KEY=your_internal_api_key_here
+INNGEST_SIGNING_KEY=your_inngest_signing_key_here
 
 # Optional APIs
 TAVILY_API_KEY=your_tavily_api_key_here
@@ -208,8 +205,11 @@ TAVILY_API_KEY=your_tavily_api_key_here
 #### Required Variables
 
 - `BLOG_API_URL`: Blog API URL for integration
-- `GOOGLE_API_KEY`: Google API key for Gemini
-- `AGENTQL_API_KEY`: AgentQL API key for advanced tools
+- `OPENAI_API_KEY`: OpenAI API key for Agno agents
+- `EXA_API_KEY`: Exa API key for search
+- `FIRECRAWL_API_KEY`: Firecrawl API key for scraping
+- `API_KEY`: API key required by middleware authentication
+- `INNGEST_SIGNING_KEY`: Inngest signing key for event verification
 
 #### Optional Variables
 

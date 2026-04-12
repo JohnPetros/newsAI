@@ -2,8 +2,8 @@ from newsai.constants import ENV
 from newsai.core.interfaces.image_generator_provider import ImageGeneratorProvider
 from newsai.core.interfaces.web_searcher_provider import WebSearcherProvider
 from newsai.core.interfaces.website_scraper_provider import WebsiteScraperProvider
-from newsai.providers.image_generator.gemini.gemini_image_generator_provider import (
-    GeminiImageGeneratorProvider,
+from newsai.providers.image_generator.noop.noop_image_generator_provider import (
+    NoopImageGeneratorProvider,
 )
 from newsai.providers.search.exa.exa_web_searcher_provider import ExaWebSearcherProvider
 from newsai.providers.website_scraper.firecrawl.firecrawl_website_scraper_provider import (
@@ -31,4 +31,4 @@ class ProvidersPipe:
 
     @staticmethod
     def get_image_generator_provider() -> ImageGeneratorProvider:
-        return GeminiImageGeneratorProvider()
+        return NoopImageGeneratorProvider()

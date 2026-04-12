@@ -93,10 +93,10 @@ O resultado final e convertido para a entidade `Post` do `core`.
 | **Framework** | FastAPI | API HTTP |
 | **Servidor ASGI** | Uvicorn | Runtime da aplicacao |
 | **IA Orquestrada** | Agno | Orquestracao de agentes |
-| **LLM** | Google Gemini | Geracao de texto e suporte aos agentes |
-| **Geracao de Imagem** | Google GenAI / Imagen | Geracao de imagem do post |
-| **Scraping** | Playwright | Extracao de conteudo de paginas |
-| **Busca** | DuckDuckGo Tools / googlesearch | Pesquisa de noticias |
+| **LLM** | OpenAI | Geracao de texto e suporte aos agentes |
+| **Geracao de Imagem** | Noop provider | Geracao desativada no momento |
+| **Scraping** | Firecrawl | Extracao de conteudo de paginas |
+| **Busca** | Exa | Pesquisa de noticias |
 | **Eventos e Jobs** | Inngest | Agendamento e execucao assincrona |
 | **Validacao** | Pydantic | Modelagem e validacao |
 | **HTTP Client** | requests | Integracao com a API do blog |
@@ -115,7 +115,7 @@ O projeto depende principalmente de servicos externos configurados via ambiente:
 |---|---|---|
 | **API HTTP** | FastAPI + Uvicorn | Expõe `/health`, `/post` e o endpoint do Inngest |
 | **Blog API** | Servico externo | Recebe os posts gerados e informa a proxima categoria |
-| **Gemini / Imagen** | Google AI | Gera texto, raciocinio dos agentes e imagem |
+| **OpenAI** | OpenAI API | Gera texto e raciocinio dos agentes |
 | **Inngest** | Inngest Cloud ou CLI local | Agenda o job `generate.post.job` |
 
 ## Estrutura de Diretorios
@@ -157,6 +157,8 @@ Contratos principais:
 - `HOST`
 - `PORT`
 - `BLOG_API_URL`
-- `GOOGLE_API_KEY`
+- `OPENAI_API_KEY`
+- `EXA_API_KEY`
+- `FIRECRAWL_API_KEY`
 - `API_KEY`
 - `INNGEST_SIGNING_KEY`

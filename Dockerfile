@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=1 \
   UV_CACHE_DIR=/tmp/uv-cache
 
-# Instalar dependências do sistema necessárias (incluindo Playwright)
+# Instalar dependências do sistema necessárias
 RUN apt-get update && apt-get install -y \
   curl \
   build-essential \
@@ -62,9 +62,6 @@ COPY pyproject.toml uv.lock ./
 # Instalar dependências com uv (apenas produção)
 RUN uv sync --frozen --no-dev
 
-# Instalar Playwright e navegadores (sem dependências do sistema)
-RUN uv run playwright install chromium
-
 # =============================================================================
 # Estágio 3: Build da aplicação
 # =============================================================================
@@ -86,7 +83,7 @@ ENV PYTHONUNBUFFERED=1 \
   PORT=8000 \
   UV_CACHE_DIR=/tmp/uv-cache
 
-# Instalar dependências mínimas do sistema (incluindo Playwright)
+# Instalar dependências mínimas do sistema
 RUN apt-get update && apt-get install -y \
   curl \
   fonts-liberation \
@@ -131,12 +128,6 @@ WORKDIR /app
 # Copiar ambiente virtual do estágio de dependências
 COPY --from=deps /app/.venv /app/.venv
 
-# Copiar navegadores do Playwright do estágio de dependências
-COPY --from=deps /root/.cache/ms-playwright /home/appuser/.cache/ms-playwright
-
-# Ajustar permissões dos navegadores do Playwright
-RUN chown -R appuser:appuser /home/appuser/.cache/ms-playwright
-
 # Copiar código da aplicação
 COPY --from=builder /app/src ./src
 
@@ -147,7 +138,6 @@ COPY .env ./
 # Definir PATH para incluir o ambiente virtual
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Ajustar permissões dos navegadores do Playwright
 RUN mkdir -p /home/appuser/.cache && \
   chown -R appuser:appuser /home/appuser && \
   chown -R appuser:appuser /app
