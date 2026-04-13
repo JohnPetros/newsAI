@@ -1,3 +1,5 @@
+from dataclasses import asdict
+from typing import Any
 from inngest import Inngest, Context, TriggerCron
 
 from newsai.core.dtos.post_dto import PostDto
@@ -17,13 +19,13 @@ class GeneratePostJob:
                 "Get next category",
                 GeneratePostJob._get_next_category,
             )
-            post = await ctx.step.run(
+            post_data = await ctx.step.run(
                 "Generate post",
                 lambda: GeneratePostJob._generate_post(category),
             )
             await ctx.step.run(
                 "Create post",
-                lambda: GeneratePostJob._create_post(post),
+                lambda: GeneratePostJob._create_post(post_data),
             )
 
         return _
@@ -34,11 +36,14 @@ class GeneratePostJob:
         return service.get_next_category().body
 
     @staticmethod
-    async def _generate_post(category: str) -> PostDto:
+    async def _generate_post(category: str) -> dict[str, Any]:
         workflow = AiPipe.get_generate_post_workflow()
-        return workflow.run(category)
+        post = workflow.run(category)
+        return asdict(post)
 
     @staticmethod
-    async def _create_post(post: PostDto):
+    async def _create_post(post_data: dict[str, Any]):
         service = RestPipe.get_blog_service()
-        return service.create_post(post)
+        response = service.create_post(PostDto(**post_data))
+        if response.is_failure:
+            response.throw_error()
