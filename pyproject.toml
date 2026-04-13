@@ -26,10 +26,9 @@ known-first-party = ["newsai"]
 executor.type = "uv"
 
 [tool.poe.tasks]
-# dev = "uv run fastapi dev src/main.py"
 dev = "uv run python src/main.py"
 ai = "uv run python src/newsai/playground.py"
-messaging = "npx --ignore-scripts=false inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest --no-discovery"
+pubsub = "npx --ignore-scripts=false inngest-cli@latest dev -u http://127.0.0.1:8000/api/inngest --no-discovery"
 genai = "uv run python src/genai.py"
 test = "uv run pytest -s -x -vv"
 typecheck = "uv run basedpyright"
