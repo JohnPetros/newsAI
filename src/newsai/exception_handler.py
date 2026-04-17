@@ -1,7 +1,7 @@
 from fastapi.responses import JSONResponse
 from fastapi import Request
 
-from newsai.core.errors import AppError
+from newsai.core.errors.app_error import AppError
 
 
 class ExceptionHandler:

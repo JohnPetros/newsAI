@@ -1,27 +1,32 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from newsai.ai.fast_mcp.mcp import FastMcpApp
+from newsai.exception_handler import ExceptionHandler
 from newsai.core.errors import AppError
 from newsai.rest.router import Router
 from newsai.pubsub.inngest_pubsub import InngestPubSub
-from newsai.exception_handler import ExceptionHandler
 
 
-def create_app() -> FastAPI:
-    app = FastAPI()
+class FastApiApp:
+    @staticmethod
+    def register() -> FastAPI:
+        mcp_app = FastMcpApp.register()
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_credentials=True,
-        allow_origins=["*"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+        app = FastAPI(title="News AI", version="0.1.0", lifespan=mcp_app.lifespan)
 
-    InngestPubSub.register(app)
+        app.add_middleware(
+            CORSMiddleware,
+            allow_credentials=True,
+            allow_origins=["*"],
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
 
-    app.add_exception_handler(AppError, ExceptionHandler.handle)
+        InngestPubSub.register(app)
 
-    app.include_router(Router.register())
+        app.add_exception_handler(AppError, ExceptionHandler.handle)
 
-    return app
+        app.include_router(Router.register())
+
+        return app
