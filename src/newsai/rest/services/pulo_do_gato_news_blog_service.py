@@ -45,6 +45,14 @@ class PuloDoGatoNewsBlogService(BlogService):
             timeout=30,
         )
 
+    def update_post_slug(self, post_id: str, slug: str) -> RestResponse[None]:
+        return self._rest_client.patch(
+            f"/posts/{post_id}/slug",
+            type(None),
+            body={"slug": slug},
+            timeout=30,
+        )
+
     def update_post_review_status(
         self,
         post_id: str,

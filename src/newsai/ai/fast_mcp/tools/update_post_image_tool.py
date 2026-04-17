@@ -41,6 +41,7 @@ class UpdatePostImageTool:
             file_name, file_bytes, content_type = UpdatePostImageTool._download_file(
                 input_data.file_url
             )
+            print(file_name, file_bytes, content_type)
 
             blog_service = RestPipe.get_blog_service()
             response = blog_service.update_post_image(

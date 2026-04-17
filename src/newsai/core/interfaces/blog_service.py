@@ -13,6 +13,8 @@ class BlogService(Protocol):
 
     def update_post_title(self, post_id: str, title: str) -> RestResponse[None]: ...
 
+    def update_post_slug(self, post_id: str, slug: str) -> RestResponse[None]: ...
+
     def update_post_review_status(
         self,
         post_id: str,
