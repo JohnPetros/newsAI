@@ -141,6 +141,8 @@ class HttpxRestClient(RestClient):
     ) -> RestResponse[Body]:
         url = self._build_url(path)
 
+        print(self._headers)
+
         try:
             with httpx.Client(
                 headers=self._headers, timeout=timeout or self._timeout

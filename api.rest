@@ -2,12 +2,12 @@
 
 ### Health check
 GET {{URL}}/health
-X-PGN-API-Key: {{PGN_API_Key}}
+X-PDGN-API-Key: {{PDGN_API_Key}}
 
 ### Generate a new post
 POST {{URL}}/post
 Content-Type: application/json
-X-PGN-API-Key: {{PGN_API_Key}}
+X-PDGN-API-Key: {{PDGN_API_Key}}
 
 {
   "category": "cultura"

@@ -31,17 +31,17 @@ class PuloDoGatoNewsBlogService(BlogService):
 
     def update_post_content(self, post_id: str, content: str) -> RestResponse[None]:
         return self._rest_client.patch(
-            f"/posts/update/{post_id}",
+            f"/posts/{post_id}/content",
             type(None),
-            data={"content": content},
+            body={"content": content},
             timeout=30,
         )
 
     def update_post_title(self, post_id: str, title: str) -> RestResponse[None]:
         return self._rest_client.patch(
-            f"/posts/update/{post_id}",
+            f"/posts/{post_id}/title",
             type(None),
-            data={"title": title},
+            body={"title": title},
             timeout=30,
         )
 
@@ -52,9 +52,9 @@ class PuloDoGatoNewsBlogService(BlogService):
         is_reviewed: bool,
     ) -> RestResponse[None]:
         return self._rest_client.patch(
-            f"/posts/update/{post_id}",
+            f"/posts/{post_id}/review-status",
             type(None),
-            data={"isReviewed": is_reviewed},
+            body={"isReviewed": is_reviewed},
             timeout=30,
         )
 
@@ -68,7 +68,7 @@ class PuloDoGatoNewsBlogService(BlogService):
         content_type: str,
     ) -> RestResponse[None]:
         return self._rest_client.patch(
-            f"/posts/update/{post_id}",
+            f"/posts/{post_id}/image",
             type(None),
             data={"alt": alt},
             files={"file": (file_name, file_bytes, content_type)},
