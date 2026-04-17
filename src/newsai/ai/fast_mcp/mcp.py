@@ -21,4 +21,4 @@ class FastMcpApp:
         UpdatePostTitleTool.handle(mcp)
         UpdatePostReviewStatusTool.handle(mcp)
 
-        return mcp.http_app(middleware=[Middleware(VerifyApiKeyMiddleware)])
+        return mcp.http_app(path="/", middleware=[Middleware(VerifyApiKeyMiddleware)])

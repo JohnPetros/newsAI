@@ -10,18 +10,18 @@ class PuloDoGatoNewsBlogService(BlogService):
         self._rest_client = rest_client
 
     def create_post(self, post: PostDto) -> RestResponse[None]:
-        form_data = {
+        body = {
             "title": post.title,
             "content": post.content,
             "category": post.category,
             "readingTime": post.reading_time,
-            "tags[]": post.tags,
+            "tags": post.tags,
         }
 
         return self._rest_client.post(
             "/posts/create",
             type(None),
-            data=form_data,
+            body=body,
             timeout=30,
         )
 

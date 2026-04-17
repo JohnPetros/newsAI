@@ -15,6 +15,8 @@ class FastApiApp:
 
         app = FastAPI(title="News AI", version="0.1.0", lifespan=mcp_app.lifespan)
 
+        app.mount("/mcp", mcp_app)
+
         app.add_middleware(
             CORSMiddleware,
             allow_credentials=True,
