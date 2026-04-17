@@ -8,7 +8,6 @@ from newsai.pipes.ai_pipe import AiPipe
 from newsai.core.dtos.post_dto import PostDto
 from newsai.core.interfaces.generate_post_workflow import GeneratePostWorkflow
 from newsai.pipes.rest_pipe import RestPipe
-from newsai.rest.middleware import Middleware
 
 
 class Body(BaseModel):
@@ -20,7 +19,7 @@ class GeneratePostController:
     def handle(router: APIRouter) -> None:
         @router.post(
             "/post",
-            dependencies=[Depends(Middleware.verify_api_key)],
+            dependencies=[Depends(RestPipe.verify_api_key)],
             response_model=PostDto,
         )
         def _(

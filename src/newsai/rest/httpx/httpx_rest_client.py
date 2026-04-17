@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from newsai.core.interfaces.rest_client import Data, Files, Json, RestClient
 from newsai.core.responses.rest_response import RestResponse
 
-BodyT = TypeVar("BodyT")
+Body = TypeVar("Body")
 
 
 class HttpxRestClient(RestClient):
@@ -20,13 +20,13 @@ class HttpxRestClient(RestClient):
         self._timeout = timeout
         self._headers = dict(headers or {})
 
-    def get[BodyT](
+    def get[Body](
         self,
         path: str,
-        response_model: type[BodyT],
+        response_model: type[Body],
         query_params: Json | None = None,
         timeout: float | None = None,
-    ) -> RestResponse[BodyT]:
+    ) -> RestResponse[Body]:
         return self._request(
             method="GET",
             path=path,
@@ -35,16 +35,16 @@ class HttpxRestClient(RestClient):
             timeout=timeout,
         )
 
-    def post[BodyT](
+    def post[Body](
         self,
         path: str,
-        response_model: type[BodyT],
+        response_model: type[Body],
         body: Any | None = None,
         query_params: Json | None = None,
         data: Data | None = None,
         files: Files | None = None,
         timeout: float | None = None,
-    ) -> RestResponse[BodyT]:
+    ) -> RestResponse[Body]:
         return self._request(
             method="POST",
             path=path,
@@ -56,16 +56,16 @@ class HttpxRestClient(RestClient):
             timeout=timeout,
         )
 
-    def put[BodyT](
+    def put[Body](
         self,
         path: str,
-        response_model: type[BodyT],
+        response_model: type[Body],
         body: Any | None = None,
         query_params: Json | None = None,
         data: Data | None = None,
         files: Files | None = None,
         timeout: float | None = None,
-    ) -> RestResponse[BodyT]:
+    ) -> RestResponse[Body]:
         return self._request(
             method="PUT",
             path=path,
@@ -77,16 +77,16 @@ class HttpxRestClient(RestClient):
             timeout=timeout,
         )
 
-    def patch[BodyT](
+    def patch[Body](
         self,
         path: str,
-        response_model: type[BodyT],
+        response_model: type[Body],
         body: Any | None = None,
         query_params: Json | None = None,
         data: Data | None = None,
         files: Files | None = None,
         timeout: float | None = None,
-    ) -> RestResponse[BodyT]:
+    ) -> RestResponse[Body]:
         return self._request(
             method="PATCH",
             path=path,
@@ -98,16 +98,16 @@ class HttpxRestClient(RestClient):
             timeout=timeout,
         )
 
-    def delete[BodyT](
+    def delete[Body](
         self,
         path: str,
-        response_model: type[BodyT],
+        response_model: type[Body],
         body: Any | None = None,
         query_params: Json | None = None,
         data: Data | None = None,
         files: Files | None = None,
         timeout: float | None = None,
-    ) -> RestResponse[BodyT]:
+    ) -> RestResponse[Body]:
         return self._request(
             method="DELETE",
             path=path,
@@ -128,17 +128,17 @@ class HttpxRestClient(RestClient):
     def set_header(self, key: str, value: str) -> None:
         self._headers[key] = value
 
-    def _request[BodyT](
+    def _request[Body](
         self,
         method: str,
         path: str,
-        response_model: type[BodyT],
+        response_model: type[Body],
         body: Any | None = None,
         query_params: Json | None = None,
         data: Data | None = None,
         files: Files | None = None,
         timeout: float | None = None,
-    ) -> RestResponse[BodyT]:
+    ) -> RestResponse[Body]:
         url = self._build_url(path)
 
         try:
@@ -169,14 +169,14 @@ class HttpxRestClient(RestClient):
             return path
         return f"{self._base_url}/{path.lstrip('/')}"
 
-    def _parse_response_body[BodyT](
-        self, response: httpx.Response, response_model: type[BodyT]
-    ) -> BodyT:
+    def _parse_response_body[Body](
+        self, response: httpx.Response, response_model: type[Body]
+    ) -> Body:
         if response_model is type(None):
-            return cast(BodyT, None)
+            return cast(Body, None)
 
         payload = response.json()
         if issubclass(response_model, BaseModel):
-            return cast(BodyT, response_model.model_validate(payload))
+            return cast(Body, response_model.model_validate(payload))
 
-        return cast(BodyT, payload)
+        return cast(Body, payload)

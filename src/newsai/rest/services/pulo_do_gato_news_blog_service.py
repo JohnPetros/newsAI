@@ -29,6 +29,52 @@ class PuloDoGatoNewsBlogService(BlogService):
         response = self._rest_client.get("/posts/next", dict, timeout=30)
         return response.map_body(self._map_category)
 
+    def update_post_content(self, post_id: str, content: str) -> RestResponse[None]:
+        return self._rest_client.patch(
+            f"/posts/update/{post_id}",
+            type(None),
+            data={"content": content},
+            timeout=30,
+        )
+
+    def update_post_title(self, post_id: str, title: str) -> RestResponse[None]:
+        return self._rest_client.patch(
+            f"/posts/update/{post_id}",
+            type(None),
+            data={"title": title},
+            timeout=30,
+        )
+
+    def update_post_review_status(
+        self,
+        post_id: str,
+        *,
+        is_reviewed: bool,
+    ) -> RestResponse[None]:
+        return self._rest_client.patch(
+            f"/posts/update/{post_id}",
+            type(None),
+            data={"isReviewed": is_reviewed},
+            timeout=30,
+        )
+
+    def update_post_image(
+        self,
+        post_id: str,
+        *,
+        file_name: str,
+        file_bytes: bytes,
+        alt: str,
+        content_type: str,
+    ) -> RestResponse[None]:
+        return self._rest_client.patch(
+            f"/posts/update/{post_id}",
+            type(None),
+            data={"alt": alt},
+            files={"file": (file_name, file_bytes, content_type)},
+            timeout=30,
+        )
+
     def _map_category(self, body: dict[object, object]) -> str:
         category = body.get("category")
         if not isinstance(category, str):

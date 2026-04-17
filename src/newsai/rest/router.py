@@ -1,6 +1,10 @@
 from fastapi import APIRouter
 
-from newsai.rest.controllers import CheckApiHealthController, GeneratePostController
+from newsai.rest.controllers import (
+    CheckApiHealthController,
+    GeneratePostController,
+    UpdatePostTitleAndReviewController,
+)
 
 
 class Router:
@@ -10,5 +14,6 @@ class Router:
 
         CheckApiHealthController.handle(router)
         GeneratePostController.handle(router)
+        UpdatePostTitleAndReviewController.handle(router)
 
         return router
