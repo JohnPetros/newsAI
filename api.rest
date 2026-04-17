@@ -10,3 +10,13 @@ X-API-Key: {{API_KEY}}
 {
   "category": "cultura"
 }
+
+### Update post title and review status
+PATCH {{URL}}/post/{{POST_ID}}
+Content-Type: application/json
+X-API-Key: {{API_KEY}}
+
+{
+  "title": "Novo titulo do post",
+  "isReviewed": true
+}
