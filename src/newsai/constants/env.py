@@ -15,5 +15,6 @@ class Env(BaseSettings):
     openai_api_key: str = Field(alias="OPENAI_API_KEY")
     exa_api_key: str = Field(alias="EXA_API_KEY")
     firecrawl_api_key: str = Field(alias="FIRECRAWL_API_KEY")
-    api_key: str = Field(alias="API_KEY")
+    pulo_do_gato_news_api_key: str = Field(alias="PULO_DO_GATO_NEWS_API_KEY")
     inngest_signing_key: str = Field(alias="INNGEST_SIGNING_KEY")
+    discord_webhook_url: str = Field(default="", alias="DISCORD_WEBHOOK_URL")
