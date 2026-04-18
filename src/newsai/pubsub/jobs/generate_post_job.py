@@ -12,7 +12,7 @@ class GeneratePostJob:
     def handle(inngest: Inngest):
         @inngest.create_function(
             fn_id="generate.post.job",
-            trigger=TriggerCron(cron="0 3 * * *"),
+            trigger=TriggerCron(cron="0 */8 * * *"),
         )
         async def _(ctx: Context) -> None:
             category = await ctx.step.run(
